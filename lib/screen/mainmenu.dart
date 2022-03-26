@@ -13,7 +13,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     return Scaffold(
         backgroundColor: Colors.blue,
         body: Container(
-          color: Color(0xFF272837),
+          color: const Color(0xFF272837),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
@@ -35,7 +35,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                               ..strokeWidth = 0.7
                               ..color = Colors.white),
                       ),
-                      Text(
+                      const Text(
                         "Flutter",
                         style: TextStyle(
                           fontFamily: "Manrope",
@@ -81,7 +81,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           FontAwesomeIcons.diceFive,
                           Colors.deepOrange,
                           width,
-                          "/"),
+                          "/XiDach"),
                       modeButton(
                           "Khủng Long",
                           "Trò chơi khủng long!",
@@ -113,12 +113,12 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
       child: RawMaterialButton(
         onPressed: null,
         fillColor: Colors.white,
-        shape: CircleBorder(),
-        constraints: BoxConstraints(minHeight: 35, minWidth: 35),
+        shape: const CircleBorder(),
+        constraints: const BoxConstraints(minHeight: 35, minWidth: 35),
         child: FaIcon(
           icon,
           size: 22,
-          color: Color(0xFF2F3041),
+          color: const Color(0xFF2F3041),
         ),
       ),
     );
@@ -132,7 +132,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         width: width,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -145,7 +145,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.none,
                           fontFamily: "Manrope",
@@ -154,7 +154,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                         )),
                   ),
                   Text(subtitle,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.none,
                         fontFamily: "Manrope",
