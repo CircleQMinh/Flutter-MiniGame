@@ -95,7 +95,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           FontAwesomeIcons.timesCircle,
                           Colors.blue,
                           width,
-                          "/"),
+                          "/tictactoe"),
                       modeButton("Xếp kẹo", "Trò chơi sắp xếp kẹo!",
                           FontAwesomeIcons.candyCane, Colors.red, width, "/")
                     ],
