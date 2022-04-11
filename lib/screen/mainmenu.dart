@@ -96,8 +96,13 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           Colors.blue,
                           width,
                           "/tictactoe"),
-                      modeButton("Xếp kẹo", "Trò chơi sắp xếp kẹo!",
-                          FontAwesomeIcons.candyCane, Colors.red, width, "/")
+                      modeButton(
+                          "Xếp hình",
+                          "Trò chơi xếp hình!",
+                          FontAwesomeIcons.candyCane,
+                          Colors.red,
+                          width,
+                          "/tetris")
                     ],
                   ),
                 ],
