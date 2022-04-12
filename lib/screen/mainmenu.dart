@@ -78,7 +78,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                       modeButton(
                           "Xì Dách",
                           "Trò chơi xì dách!",
-                          FontAwesomeIcons.diceFive,
+                          FontAwesomeIcons.heart,
                           Colors.deepOrange,
                           width,
                           "/XiDach"),
@@ -96,13 +96,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           Colors.blue,
                           width,
                           "/tictactoe"),
-                      modeButton(
-                          "Xếp hình",
-                          "Trò chơi xếp hình!",
-                          FontAwesomeIcons.candyCane,
-                          Colors.red,
-                          width,
-                          "/tetris")
+                      modeButton("Xếp hình", "Trò chơi xếp hình!",
+                          FontAwesomeIcons.square, Colors.red, width, "/tetris")
                     ],
                   ),
                 ],

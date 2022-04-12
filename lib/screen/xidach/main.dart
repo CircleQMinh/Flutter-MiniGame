@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../widget/XiDach/cards_grid_view.dart';
 import '../../widget/XiDach/custom_button.dart';
@@ -221,6 +222,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
   void addCard() {
     if (gameResult != "") {
       showMyDialogMessage("Nhấn nút chơi tiếp để tiếp tục!");
+      return;
     }
     print("Rút bài");
     Random random = Random();
@@ -255,6 +257,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
     }
     if (gameResult != "") {
       showMyDialogMessage("Nhấn nút chơi tiếp để tiếp tục!");
+      return;
     }
 
     gameTurn = "Com";
@@ -344,23 +347,29 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
 
   Widget getTurnText(String text) {
     if (text == "Player") {
-      return const Text("Lượt của bạn !!!",
-          style: TextStyle(
-            fontFamily: "Manrope",
-            fontWeight: FontWeight.bold,
-            decoration: TextDecoration.none,
-            fontSize: 36,
-            color: Colors.black,
-          ));
+      return Container(
+        color: Colors.black,
+        child: const Text("Lượt của bạn !!!",
+            style: TextStyle(
+              fontFamily: "Manrope",
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+              fontSize: 18,
+              color: Colors.yellow,
+            )),
+      );
     } else {
-      return const Text("Lượt của máy...",
-          style: TextStyle(
-            fontFamily: "Manrope",
-            fontWeight: FontWeight.bold,
-            decoration: TextDecoration.none,
-            fontSize: 36,
-            color: Colors.black,
-          ));
+      return Container(
+        color: Colors.black,
+        child: const Text("Lượt của máy !!!",
+            style: TextStyle(
+              fontFamily: "Manrope",
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.none,
+              fontSize: 18,
+              color: Colors.yellow,
+            )),
+      );
     }
   }
 
@@ -391,108 +400,259 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
     );
   }
 
+  Padding circButton(IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RawMaterialButton(
+        onPressed: null,
+        fillColor: Colors.white,
+        shape: const CircleBorder(),
+        constraints: const BoxConstraints(minHeight: 35, minWidth: 35),
+        child: FaIcon(
+          icon,
+          size: 22,
+          color: const Color(0xFF2F3041),
+        ),
+      ),
+    );
+  }
+
+  GestureDetector startButton(String title, String subtitle, IconData icon,
+      Color color, double width, String game) {
+    return GestureDetector(
+      onTap: () => {startNewMatch()},
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 22.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                          fontFamily: "Manrope",
+                          color: Colors.white,
+                          fontSize: 18,
+                        )),
+                  ),
+                  Text(subtitle,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.none,
+                        fontFamily: "Manrope",
+                        color: Colors.white,
+                        fontSize: 12,
+                      ))
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 18),
+              child: FaIcon(
+                icon,
+                size: 35,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width - 80;
+    String image_src =
+        "https://gogeticon.net/files/981003/a0ba6e2670d30a5e6ff26888cc0c6bec.png";
     return Scaffold(
       body: _isGameStarted
           ? SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        "Nút của nhà cái: $dealersScore",
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: dealersScore <= 21
-                                ? Colors.green[900]
-                                : Colors.red[900]),
+              child: Container(
+                color: Colors.green,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      color: Colors.black,
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 3,
+                              bottom: 3,
+                            ),
+                            child: Text(
+                              "Nút của nhà cái: $dealersScore",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: dealersScore > 21
+                                      ? Colors.red
+                                      : Colors.yellow),
+                            ),
+                          ),
+                          CardsGridView(cards: dealersCards),
+                        ],
                       ),
-                      CardsGridView(cards: dealersCards),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      getTurnText(gameTurn),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text("Nút của bạn: $playersScore",
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: playersScore <= 21
-                                  ? Colors.green[900]
-                                  : Colors.red[900])),
-                      CardsGridView(cards: myCards)
-                    ],
-                  ),
-                  IntrinsicWidth(
+                    ),
+                    Container(
+                      color: Colors.black,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getTurnText(gameTurn),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: Colors.black,
+                      child: Column(
+                        children: [
+                          CardsGridView(cards: myCards),
+                          Container(
+                            margin: const EdgeInsets.only(
+                              top: 3,
+                              bottom: 3,
+                            ),
+                            child: Text("Nút của bạn: $playersScore",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: playersScore > 21
+                                      ? Colors.red
+                                      : Colors.yellow,
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          getResultText(gameResult),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text('Chuỗi thắng : $winCount',
+                                    textAlign: TextAlign.center),
+                              ),
+                              const Expanded(
+                                child: Text('Chuỗi thắng dài nhất: 0',
+                                    textAlign: TextAlign.center),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomButton(
+                                onPressed: () {
+                                  addCard();
+                                },
+                                label: "Rút bài",
+                              ),
+                              CustomButton(
+                                onPressed: () {
+                                  startNewMatch();
+                                },
+                                label: "Chơi lại",
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomButton(
+                                onPressed: () {
+                                  endTurn();
+                                },
+                                label: "Kết thúc",
+                              ),
+                              CustomButton(
+                                onPressed: () {
+                                  startNewRound();
+                                },
+                                label: "Chơi tiếp",
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : Scaffold(
+              backgroundColor: Colors.blue,
+              body: Container(
+                color: Color.fromARGB(255, 102, 111, 228),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        getResultText(gameResult),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text('Chuỗi thắng : $winCount',
-                                  textAlign: TextAlign.center),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Mini-Game",
+                              style: TextStyle(
+                                  fontFamily: "Manrope",
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                  fontSize: 36,
+                                  foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = 0.7
+                                    ..color = Colors.white),
                             ),
-                            const Expanded(
-                              child: Text('Chuỗi thắng dài nhất: 0',
-                                  textAlign: TextAlign.center),
+                            const Text(
+                              "Xì Dách",
+                              style: TextStyle(
+                                fontFamily: "Manrope",
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.none,
+                                fontSize: 36,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CustomButton(
-                              onPressed: () {
-                                addCard();
-                              },
-                              label: "Rút bài",
-                            ),
-                            CustomButton(
-                              onPressed: () {
-                                startNewMatch();
-                              },
-                              label: "Chơi lại",
-                            ),
-                          ],
+                        Container(
+                          child: Center(child: Image.network(image_src)),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Wrap(
+                          runSpacing: 16,
                           children: [
-                            CustomButton(
-                              onPressed: () {
-                                endTurn();
-                              },
-                              label: "Kết thúc",
-                            ),
-                            CustomButton(
-                              onPressed: () {
-                                startNewRound();
-                              },
-                              label: "Chơi tiếp",
-                            ),
+                            startButton(
+                                "Start Game!",
+                                "Nhấn để bắt đầu trò chơi",
+                                FontAwesomeIcons.playCircle,
+                                Colors.red,
+                                width,
+                                ""),
                           ],
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            )
-          : Center(
-              child: CustomButton(
-                onPressed: () => startNewMatch(),
-                label: "Start Game",
+                ),
               ),
             ),
     );

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minigame_app/model/Tetris/Teris.dart';
 import '../../widget/Tetris/BrickShape.dart';
 import '../../widget/Tetris/TetrisWidget.dart';
@@ -30,9 +31,66 @@ class _TetrisScreenState extends State<TetrisScreen> {
     setState(() {});
   }
 
+  GestureDetector startButton(String title, String subtitle, IconData icon,
+      Color color, double width, String game) {
+    return GestureDetector(
+      onTap: () => {startGame()},
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 22.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                          fontFamily: "Manrope",
+                          color: Colors.white,
+                          fontSize: 18,
+                        )),
+                  ),
+                  Text(subtitle,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.none,
+                        fontFamily: "Manrope",
+                        color: Colors.white,
+                        fontSize: 12,
+                      ))
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 18),
+              child: FaIcon(
+                icon,
+                size: 35,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     double sizePerSquare = 30;
+    double width = MediaQuery.of(context).size.width - 80;
+    String image_src =
+        "https://cdn-icons-png.flaticon.com/512/1138/1138720.png";
     return Scaffold(
       body: _isGameStarted
           ? Container(
@@ -190,10 +248,62 @@ class _TetrisScreenState extends State<TetrisScreen> {
                 },
               )),
             )
-          : Center(
-              child: CustomButton(
-                onPressed: () => startGame(),
-                label: "Start Game Tetris",
+          : Scaffold(
+              backgroundColor: Colors.blue,
+              body: Container(
+                color: Color.fromARGB(255, 94, 205, 224),
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Mini-Game",
+                              style: TextStyle(
+                                  fontFamily: "Manrope",
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                  fontSize: 36,
+                                  foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = 0.7
+                                    ..color = Colors.white),
+                            ),
+                            const Text(
+                              "Xếp hình",
+                              style: TextStyle(
+                                fontFamily: "Manrope",
+                                fontWeight: FontWeight.bold,
+                                decoration: TextDecoration.none,
+                                fontSize: 36,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          child: Center(child: Image.network(image_src)),
+                        ),
+                        Wrap(
+                          runSpacing: 16,
+                          children: [
+                            startButton(
+                                "Start Game!",
+                                "Nhấn để bắt đầu trò chơi",
+                                FontAwesomeIcons.playCircle,
+                                Colors.red,
+                                width,
+                                ""),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
     );
