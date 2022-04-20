@@ -6,6 +6,7 @@ import 'package:minigame_app/screen/tictactoe/pages/home/home_page.dart';
 
 import 'screen/mainmenu.dart';
 import 'screen/tetris/main.dart';
+import 'screen/snake/main.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
         "/RPS": (context) => RockPaperScissors(),
         "/XiDach": (context) => const BlackJackScreen(),
         "/tictactoe": (context) => const TictactoePage(),
-        "/tetris": (context) => const TetrisScreen()
+        "/tetris": (context) => const TetrisScreen(),
+        "/snake": (context) => const SnakeApp(),
       },
     );
   }
