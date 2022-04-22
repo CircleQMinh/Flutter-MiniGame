@@ -40,10 +40,23 @@ class _HomePageState extends State<HomePage> {
   bool start = false;
   Direction direction = Direction.down;
   List<int> totalSpot = List.generate(760, (index) => index); //totalspot
+  var timerStart;
+
   startGame() {
     start = true;
     snakePosition = [24, 44, 64];
-    Timer.periodic(const Duration(milliseconds: 300), (timer) {
+    // Tuong tu setInterval JS
+    timerStart = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      updateSnake();
+      if (gameOver()) {
+        gameOverAlert();
+        timer.cancel();
+      }
+    });
+  }
+
+  continueGame() {
+    timerStart = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       updateSnake();
       if (gameOver()) {
         gameOverAlert();
@@ -57,8 +70,10 @@ class _HomePageState extends State<HomePage> {
       switch (direction) {
         case Direction.down:
           if (snakePosition.last > 740) {
+            // Neu vi tri dau ran lon hon 740 thi dua cai dau con ran len tren
             snakePosition.add(snakePosition.last - 760 + 20);
           } else {
+            // Neu vi tri dau ran nho hon 740 thi vi tri con ran cong them 20
             snakePosition.add(snakePosition.last + 20);
           }
           break;
@@ -131,6 +146,33 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  pauseGame() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pause'),
+          content:
+          Text('your score is ' + (snakePosition.length - 3).toString()),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  start = true;
+                  Navigator.of(context, rootNavigator: true).pop();
+                  continueGame();
+                },
+                child: const Text('Continue')),
+            TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/');
+                },
+                child: const Text('Exit'))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,6 +194,7 @@ class _HomePageState extends State<HomePage> {
               direction = Direction.left;
             }
           },
+          // Tao man hinh voi Grid view Builder
           child: GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             itemCount: 760,
@@ -160,16 +203,16 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               if (snakePosition.contains(index)) {
                 return Container(
-                  color: Colors.white,
+                  color: Colors.red,
                 );
               }
               if (index == foodLocation) {
                 return Container(
-                  color: Colors.red,
+                  color: Colors.yellow,
                 );
               }
               return Container(
-                color: Colors.black,
+                color: Colors.grey,
               );
             },
           ),
@@ -177,7 +220,13 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          startGame();
+          if(!start){
+            startGame();
+          }
+          else {
+            timerStart.cancel();
+            pauseGame();
+          }
         },
         child: start
             ? Text((snakePosition.length - 3).toString())

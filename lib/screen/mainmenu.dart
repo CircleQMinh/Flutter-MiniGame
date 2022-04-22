@@ -99,7 +99,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                       modeButton("Xếp hình", "Trò chơi xếp hình!",
                           FontAwesomeIcons.square, Colors.red, width, "/tetris"),
                       modeButton("Con rắn", "Trò chơi con rắn!",
-                          FontAwesomeIcons.chartLine, Colors.red, width, "/snake")
+                          FontAwesomeIcons.chartLine, Colors.red, width, "/snake"),
+                      modeButton("Bắn bong bóng", "Trò chơi bắn bong bóng!",
+                          FontAwesomeIcons.chartLine, Colors.red, width, "/bubble")
                     ],
                   ),
                 ],

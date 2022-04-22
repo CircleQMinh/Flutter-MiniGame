@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:minigame_app/screen/BubbleTrouble/main.dart';
 import 'package:minigame_app/screen/rock_paper_scissors/main.dart';
 import 'package:minigame_app/screen/xidach/main.dart';
 import 'package:minigame_app/screen/tictactoe/pages/home/home_page.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         "/tictactoe": (context) => const TictactoePage(),
         "/tetris": (context) => const TetrisScreen(),
         "/snake": (context) => const SnakeApp(),
+        "/bubble": (context) => const BubbleApp()
       },
     );
   }
