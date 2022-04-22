@@ -20,6 +20,8 @@ class _BrickShapeState extends State<BrickShape> {
   Widget build(BuildContext context) {
     int totalPointList = widget.list.expand((element) => element).length;
     int columnNumm = (totalPointList ~/ widget.list.length);
+    // print("list: ${widget.list}");
+    // print("point: ${totalPointList}");
     return Container(
       //height: 20,
       width: widget.sizePerSquare * columnNumm,
