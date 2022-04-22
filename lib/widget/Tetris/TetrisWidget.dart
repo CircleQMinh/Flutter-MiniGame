@@ -8,7 +8,7 @@ import 'BrickShape.dart';
 class TetrisWidget extends StatefulWidget {
   final Size size;
   final double? sizePerSquare;
-  Function(List<BrickObjectPos> brickObjectPos)? setNextBrick;
+  Function(List<BrickObject> brickObjectPos)? setNextBrick;
 
   TetrisWidget(this.size, {Key? key, this.setNextBrick, this.sizePerSquare})
       : super(key: key);
@@ -20,27 +20,29 @@ class TetrisWidget extends StatefulWidget {
 class TetrisWidgetState extends State<TetrisWidget>
     with SingleTickerProviderStateMixin {
   //set animation & controller animation
+  //lazy
   late Animation<double>? animation;
   late AnimationController animationController;
 
   late Size sizeBox;
   late List<int> levelBases;
-  //current brick
-  ValueNotifier<List<BrickObjectPos>> brickObjectPosValue =
-      ValueNotifier<List<BrickObjectPos>>([]);
-  //for point already done
-  ValueNotifier<List<BrickObjectPosDone>> donePointsValue =
-      ValueNotifier<List<BrickObjectPosDone>>([]);
-  //declate all param
+  // brick hiện tại
+  ValueNotifier<List<BrickObject>> listOfBricks =
+      ValueNotifier<List<BrickObject>>([]);
+  //vị trí đã xong
+  ValueNotifier<List<BrickObjectDone>> donePointsValue =
+      ValueNotifier<List<BrickObjectDone>>([]);
   ValueNotifier<int> animationPosTickValue = ValueNotifier<int>(0);
+  //điểm
+  int score = 0;
   @override
   void initState() {
     super.initState();
 
-    //calculate size box base size box tetris
+    //tính độ lớn size của khung chơi
     calculateSizeBox();
-    animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+    animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     animation = Tween<double>(begin: 0, end: 1).animate(animationController)
       ..addListener(animationLoop);
 
@@ -48,12 +50,12 @@ class TetrisWidgetState extends State<TetrisWidget>
   }
 
   calculateSizeBox() {
-    //sizebox to calculate overall size which need for tetris take place
+    //tính size của khung game
     sizeBox = Size(
         (widget.size.width ~/ widget.sizePerSquare!) * widget.sizePerSquare!,
         (widget.size.height ~/ widget.sizePerSquare!) * widget.sizePerSquare!);
 
-    //calculate base level ingame
+    //tính toán vị trí của khung game
 
     var numberOfCol = sizeBox.width ~/ widget.sizePerSquare!;
     var numberOfRow = sizeBox.height ~/ widget.sizePerSquare!;
@@ -83,40 +85,40 @@ class TetrisWidgetState extends State<TetrisWidget>
   }
 
   animationLoop() async {
-    if (animation!.isCompleted && brickObjectPosValue.value.length > 1) {
+    if (animation!.isCompleted && listOfBricks.value.length > 1) {
       print("run");
-      //get current move
-      BrickObjectPos currentObj =
-          brickObjectPosValue.value[brickObjectPosValue.value.length - 2];
-      //calculate offset target on animate
+      //lấy brick hiện tại
+      BrickObject currentObj =
+          listOfBricks.value[listOfBricks.value.length - 2];
+      //dịch chuyển xuống 1 ô
       Offset target = currentObj.offset.translate(0, widget.sizePerSquare!);
-      //check target move exceed wall or base
+      //check có đến vị trí cuối chưa
 
       if (checkTargetMove(target, currentObj)) {
-        currentObj.offset = target;
-        currentObj.calculateHit();
-        brickObjectPosValue.notifyListeners();
+        //nếu ko thì
+        currentObj.offset = target; //di chuyển
+        currentObj.calculatePointArray(); // tính toán vị trí mới để vẽ gạch
+        listOfBricks.notifyListeners();
       } else {
+        //đánh dấu hoàn thành
         currentObj.isDone = true;
-
+        //thêm những vị trí của viên gạch vào danh sách hoàn thành
         currentObj.pointArray
             .where((element) => element != -99999)
             .toList()
             .forEach((element) {
           donePointsValue.value
-              .add(BrickObjectPosDone(element, color: currentObj.color));
+              .add(BrickObjectDone(element, color: currentObj.color));
         });
 
         donePointsValue.notifyListeners();
-        //remove second last array
-        //show on our layout
-        brickObjectPosValue.value
-            .removeAt(brickObjectPosValue.value.length - 2);
+        //bỏ viên gạch ra khỏi danh sách gạch hiện tại
+        listOfBricks.value.removeAt(listOfBricks.value.length - 2);
 
-        //check complete line
+        //kiểm tra xem có hoàn thành hàng không
         await checkCompleteLine();
 
-        //checkgameover
+        //check gameover
         bool status = await checkGameOver();
         if (!status) {
           randomBrick();
@@ -125,7 +127,7 @@ class TetrisWidgetState extends State<TetrisWidget>
         }
       }
 
-      brickObjectPosValue.notifyListeners();
+      listOfBricks.notifyListeners();
       animationController.reset();
       animationController.forward();
     }
@@ -137,47 +139,51 @@ class TetrisWidgetState extends State<TetrisWidget>
   checkCompleteLine() async {
     var numberOfCol = sizeBox.width ~/ widget.sizePerSquare!;
     var numberOfRow = sizeBox.height ~/ widget.sizePerSquare!;
-    List<int> leftIndex =
-        List.generate(sizeBox.height ~/ widget.sizePerSquare!, (index) {
-      return index * (sizeBox.width ~/ widget.sizePerSquare!);
+
+    //danh sách các điểm bắt đầu bên trái
+    List<int> leftIndex = List.generate(numberOfRow, (index) {
+      return index * (numberOfCol);
     });
 
+    //số cột không phải là tường
     int totalCol = (sizeBox.width ~/ widget.sizePerSquare!) - 2;
 
     List<int> lineDestroys = leftIndex
         .where((element) {
           return donePointsValue.value
-                  .where((point) => point.index == element + 1)
-                  .length >
-              0;
-        })
+              .where((point) => point.index == element + 1)
+              .isNotEmpty;
+        }) //lấy index các dòng có ô kế bên là gạch
         .where((donePoint) {
           List<int> rows =
               List.generate(totalCol, (index) => donePoint + 1 + index)
-                  .toList();
+                  .toList(); //lấy các điểm trên dòng này
+
           return rows.where((row) {
                 return donePointsValue.value
-                        .where((element) => element.index == row)
-                        .length >
-                    0;
+                    .where((element) => element.index == row)
+                    .isNotEmpty;
               }).length ==
               rows.length;
+          //lấy index các dòng có toàn bộ dòng nằm trong donePointsValue
         })
         .map((e) {
           return List.generate(totalCol, (index) => e + 1 + index).toList();
+          //map từ index thành row
         })
         .expand((element) => element)
         .toList();
 
-    List<BrickObjectPosDone> tempDonePoints = donePointsValue.value;
-    if (lineDestroys.length > 0) {
+    List<BrickObjectDone> tempDonePoints = donePointsValue.value;
+    //nếu có line thỏa dk
+    if (lineDestroys.isNotEmpty) {
       lineDestroys.sort(((a, b) => a.compareTo(b)));
       tempDonePoints.sort(((a, b) => a.index.compareTo(b.index)));
       int firstIndex = tempDonePoints
           .indexWhere((element) => element.index == lineDestroys.first);
       if (firstIndex >= 0) {
         tempDonePoints.removeWhere((element) {
-          return lineDestroys.where((line) => line == element.index).length > 0;
+          return lineDestroys.where((line) => line == element.index).isNotEmpty;
         });
 
         donePointsValue.value = tempDonePoints.map((e) {
@@ -187,6 +193,8 @@ class TetrisWidgetState extends State<TetrisWidget>
           }
           return e;
         }).toList();
+        var increase = (lineDestroys.length * 10 / 11).ceil();
+        score += int.parse(increase.toString());
         donePointsValue.notifyListeners();
       }
     }
@@ -194,9 +202,8 @@ class TetrisWidgetState extends State<TetrisWidget>
 
   Future<bool> checkGameOver() async {
     return donePointsValue.value
-            .where((element) => element.index < 0 && element.index != -99999)
-            .length >
-        0;
+        .where((element) => element.index < 0 && element.index != -99999)
+        .isNotEmpty;
   }
 
   pauseGame() async {
@@ -205,13 +212,13 @@ class TetrisWidgetState extends State<TetrisWidget>
       context: context,
       builder: (context) => SimpleDialog(
         children: [
-          Text("Pause Game"),
+          const Text("Pause Game"),
           ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 animationController.forward();
               },
-              child: Text("Resume"))
+              child: const Text("Resume"))
         ],
       ),
     );
@@ -224,13 +231,13 @@ class TetrisWidgetState extends State<TetrisWidget>
       barrierDismissible: false,
       builder: (context) => SimpleDialog(
         children: [
-          Text("Reset Game"),
+          const Text("Reset Game"),
           ElevatedButton(
             onPressed: () {
               donePointsValue.value = [];
               donePointsValue.notifyListeners();
-              brickObjectPosValue.value = [];
-              brickObjectPosValue.notifyListeners();
+              listOfBricks.value = [];
+              listOfBricks.notifyListeners();
 
               Navigator.of(context).pop();
 
@@ -240,15 +247,15 @@ class TetrisWidgetState extends State<TetrisWidget>
               animationController.stop();
               animationController.forward();
             },
-            child: Text("Start/Reset"),
+            child: const Text("Start/Reset"),
           )
         ],
       ),
     );
   }
 
-  bool checkTargetMove(Offset targetPos, BrickObjectPos object) {
-    List<int> pointsPredict = object.calculateHit(predict: targetPos);
+  bool checkTargetMove(Offset targetPos, BrickObject object) {
+    List<int> pointsPredict = object.calculatePointArray(predict: targetPos);
     List<int> hitsIndex = [];
     //add all wall
     hitsIndex.addAll(levelBases);
@@ -256,35 +263,38 @@ class TetrisWidgetState extends State<TetrisWidget>
     hitsIndex.addAll(donePointsValue.value.map((e) => e.index));
     //get number hit on point hit
     int numberHitBase = pointsPredict
-        .map((e) => hitsIndex.indexWhere((element) => element == e) > -1)
+        .map((e) =>
+            hitsIndex.indexWhere((element) => element == e) >
+            -1) //lấy ra những point có trùng với tường hoặc gạch khác
         .where((element) => element)
-        .length;
+        .length; //lấy tổng số
 
-    return numberHitBase == 0;
+    return numberHitBase ==
+        0; //chấp nhận nếu không đụng vào tường hay gạch khác
   }
 
   randomBrick({
     start: false,
   }) {
     //start =true generate 2 random brick, =false generate 1
-    brickObjectPosValue.value.add(getNewBrickPos());
+    listOfBricks.value.add(getNewBrickPos());
 
     if (start) {
-      brickObjectPosValue.value.add(getNewBrickPos());
+      listOfBricks.value.add(getNewBrickPos());
     }
 
-    widget.setNextBrick!.call(brickObjectPosValue.value);
-    brickObjectPosValue.notifyListeners();
+    widget.setNextBrick!.call(listOfBricks.value);
+    listOfBricks.notifyListeners();
   }
 
-  BrickObjectPos getNewBrickPos() {
-    return BrickObjectPos(
+  BrickObject getNewBrickPos() {
+    return BrickObject(
       size: Size.square(widget.sizePerSquare!),
       sizeLayout: sizeBox,
       color:
           Colors.primaries[Random().nextInt(Colors.primaries.length)].shade800,
       rotation: Random().nextInt(4),
-      offset: Offset(widget.sizePerSquare! * 4, -widget.sizePerSquare! * 3),
+      offset: Offset(widget.sizePerSquare! * 4, -widget.sizePerSquare! * 4),
       shapeEnum:
           BrickShapeEnum.values[Random().nextInt(BrickShapeEnum.values.length)],
     );
@@ -310,13 +320,13 @@ class TetrisWidgetState extends State<TetrisWidget>
         alignment: Alignment.center,
         child: ValueListenableBuilder(
           valueListenable: donePointsValue,
-          builder: (context, List<BrickObjectPosDone> donePoints, child) {
+          builder: (context, List<BrickObjectDone> donePoints, child) {
             return ValueListenableBuilder(
-              valueListenable: brickObjectPosValue,
-              builder: (context, List<BrickObjectPos> brickObjectPoses, child) {
+              valueListenable: listOfBricks,
+              builder: (context, List<BrickObject> brickObjects, child) {
                 return Stack(
                   children: [
-                    //1st generate box show our grid
+                    //khung chơi
                     ...List.generate(
                         sizeBox.width ~/
                             widget.sizePerSquare! *
@@ -345,8 +355,8 @@ class TetrisWidgetState extends State<TetrisWidget>
                           ));
                     }).toList(),
                     //show brick
-                    if (brickObjectPoses.length > 1)
-                      ...brickObjectPoses
+                    if (brickObjects.length > 1)
+                      ...brickObjects
                           .where((element) => !element.isDone)
                           .toList()
                           .asMap()
@@ -399,22 +409,22 @@ class TetrisWidgetState extends State<TetrisWidget>
 
   transformBrick(Offset? move, bool? rotate) {
     if (move != null || rotate != null) {
-      //get current move
-      BrickObjectPos currentObj =
-          brickObjectPosValue.value[brickObjectPosValue.value.length - 2];
+      //get gạch hiện tại
+      BrickObject currentObj =
+          listOfBricks.value[listOfBricks.value.length - 2];
       late Offset target;
       if (move != null) {
         target = currentObj.offset.translate(move.dx, move.dy);
         if (checkTargetMove(target, currentObj)) {
           currentObj.offset = target;
-          currentObj.calculateHit();
-          brickObjectPosValue.notifyListeners();
+          currentObj.calculatePointArray();
+          listOfBricks.notifyListeners();
         }
       } else {
         currentObj.calculateRotation(1);
         if (checkTargetMove(currentObj.offset, currentObj)) {
-          currentObj.calculateHit();
-          brickObjectPosValue.notifyListeners();
+          currentObj.calculatePointArray();
+          listOfBricks.notifyListeners();
         } else {
           currentObj.calculateRotation(-1);
         }

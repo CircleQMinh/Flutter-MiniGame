@@ -1,11 +1,9 @@
-import 'dart:math';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minigame_app/model/Tetris/Teris.dart';
 import '../../widget/Tetris/BrickShape.dart';
 import '../../widget/Tetris/TetrisWidget.dart';
-import '../../widget/XiDach/custom_button.dart';
 
 class TetrisScreen extends StatefulWidget {
   const TetrisScreen({Key? key}) : super(key: key);
@@ -18,8 +16,10 @@ class _TetrisScreenState extends State<TetrisScreen> {
   bool _isGameStarted = false;
 
   GlobalKey<TetrisWidgetState> keyGlobal = GlobalKey();
-  ValueNotifier<List<BrickObjectPos>> brickObjectPosValue =
-      ValueNotifier<List<BrickObjectPos>>(List<BrickObjectPos>.from([]));
+  ValueNotifier<List<BrickObject>> brickObjects =
+      ValueNotifier<List<BrickObject>>(List<BrickObject>.from([]));
+
+  int score = 0;
 
   @override
   void initState() {
@@ -28,6 +28,16 @@ class _TetrisScreenState extends State<TetrisScreen> {
 
   void startGame() {
     _isGameStarted = true;
+    const oneSec = Duration(seconds: 1);
+    Timer.periodic(
+        oneSec,
+        (Timer t) => {
+              setState(() {
+                if (mounted) {
+                  score = keyGlobal.currentState?.score ?? score;
+                }
+              })
+            });
     setState(() {});
   }
 
@@ -116,11 +126,16 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                   //score and line
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text("Scores ${null ?? 0}: "),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text("Scores ${null ?? 0}: "),
+                                    child: Text(
+                                      "Scores :$score ",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.none,
+                                        fontFamily: "Manrope",
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
                                   Row(
                                     mainAxisAlignment:
@@ -135,7 +150,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                           onPressed: () {
                                             keyGlobal.currentState!.resetGame();
                                           },
-                                          child: Text("Start/Reset")),
+                                          child: const Text("Start/Reset")),
                                       ElevatedButton(
                                           style: ButtonStyle(
                                               backgroundColor:
@@ -145,7 +160,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                           onPressed: () {
                                             keyGlobal.currentState!.pauseGame();
                                           },
-                                          child: Text("Pause")),
+                                          child: const Text("Pause")),
                                     ],
                                   )
                                 ],
@@ -157,21 +172,21 @@ class _TetrisScreenState extends State<TetrisScreen> {
                               child: Column(
                                 children: [
                                   //score and line
-                                  Text("Next : "),
+                                  const Text("Next : "),
                                   //contain box show next tetris
 
                                   Container(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 40, vertical: 10),
                                     child: ValueListenableBuilder(
-                                      valueListenable: brickObjectPosValue,
+                                      valueListenable: brickObjects,
                                       builder: (context,
-                                          List<BrickObjectPos> value, child) {
+                                          List<BrickObject> value, child) {
                                         BrickShapeEnum tempShapeEnum =
-                                            value.length > 0
+                                            value.isNotEmpty
                                                 ? value.last.shapeEnum
                                                 : BrickShapeEnum.Line;
-                                        int rotation = value.length > 0
+                                        int rotation = value.isNotEmpty
                                             ? value.last.rotation
                                             : 0;
                                         return BrickShape(
@@ -204,9 +219,9 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                 sizePerSquare: sizePerSquare,
                                 //make callback for next brick show after generate
                                 setNextBrick:
-                                    (List<BrickObjectPos> brickObjectPos) {
-                              brickObjectPosValue.value = brickObjectPos;
-                              brickObjectPosValue.notifyListeners();
+                                    (List<BrickObject> brickObjectPos) {
+                              brickObjects.value = brickObjectPos;
+                              brickObjects.notifyListeners();
                             });
                           })),
                         ),
@@ -221,24 +236,24 @@ class _TetrisScreenState extends State<TetrisScreen> {
                               onPressed: () => keyGlobal.currentState!
                                   .transformBrick(
                                       Offset(-sizePerSquare, 0), null),
-                              child: Text("Left"),
+                              child: const Text("Left"),
                             ),
                             ElevatedButton(
                               onPressed: () => keyGlobal.currentState!
                                   .transformBrick(
                                       Offset(sizePerSquare, 0), null),
-                              child: Text("Right"),
+                              child: const Text("Right"),
                             ),
                             ElevatedButton(
                               onPressed: () => keyGlobal.currentState!
                                   .transformBrick(
                                       Offset(0, sizePerSquare), null),
-                              child: Text("Down"),
+                              child: const Text("Down"),
                             ),
                             ElevatedButton(
                               onPressed: () => keyGlobal.currentState!
                                   .transformBrick(null, true),
-                              child: Text("Rotate"),
+                              child: const Text("Rotate"),
                             ),
                           ],
                         ),
@@ -251,7 +266,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
           : Scaffold(
               backgroundColor: Colors.blue,
               body: Container(
-                color: Color.fromARGB(255, 94, 205, 224),
+                color: const Color.fromARGB(255, 94, 205, 224),
                 child: Center(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
@@ -285,9 +300,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                             ),
                           ],
                         ),
-                        Container(
-                          child: Center(child: Image.network(image_src)),
-                        ),
+                        Center(child: Image.network(image_src)),
                         Wrap(
                           runSpacing: 16,
                           children: [

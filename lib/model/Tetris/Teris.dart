@@ -172,18 +172,13 @@ class BrickShapeStatic {
   }
 }
 
-class BrickObject {
-  bool enable;
-  BrickObject(List<List<double>> listBrickOnEnum, {this.enable = false});
-}
-
-class BrickObjectPosDone {
+class BrickObjectDone {
   Color? color;
   int index;
-  BrickObjectPosDone(int this.index, {this.color});
+  BrickObjectDone(int this.index, {this.color});
 }
 
-class BrickObjectPos {
+class BrickObject {
   Offset offset;
   BrickShapeEnum shapeEnum;
   int rotation;
@@ -193,7 +188,7 @@ class BrickObjectPos {
   List<int> pointArray = [];
   Color color;
 
-  BrickObjectPos({
+  BrickObject({
     this.size,
     this.sizeLayout,
     this.isDone: false,
@@ -202,11 +197,11 @@ class BrickObjectPos {
     this.rotation: 0,
     this.color: Colors.amber,
   }) {
-    calculateHit();
+    calculatePointArray();
   }
 
-  static clone(BrickObjectPos object) {
-    return new BrickObjectPos(
+  static clone(BrickObject object) {
+    return new BrickObject(
         offset: object.offset,
         shapeEnum: object.shapeEnum,
         rotation: object.rotation,
@@ -216,18 +211,22 @@ class BrickObjectPos {
         color: object.color);
   }
 
-  calculateHit({Offset? predict}) {
+  calculatePointArray({Offset? predict}) {
     List<int> lists = BrickShapeStatic.getListBrickOnEnum(this.shapeEnum,
             direction: this.rotation)
+        // [0, 1, 0],
+        // [1, 1, 0],
+        // [0, 1, 0],
         .expand((element) => element)
         .map((e) => e.toInt())
-        .toList();
+        .toList(); //[0,1,0....]
     List<int> tempPoint = lists
         .asMap()
         .entries
         .map((e) => calculateOffset(
             e, lists.length, predict != null ? predict : this.offset))
         .toList();
+    //  print(tempPoint);//[101, -99, -999, 114, 115, -999, -999, 128, -99]
     if (predict != null) {
       return tempPoint;
     } else {
@@ -237,12 +236,12 @@ class BrickObjectPos {
 
   setShape(BrickShapeEnum shapeEnum) {
     this.shapeEnum = shapeEnum;
-    calculateHit();
+    calculatePointArray();
   }
 
   calculateRotation(int flag) {
     this.rotation += flag;
-    calculateHit();
+    calculatePointArray();
   }
 
   int calculateOffset(MapEntry<int, int> entry, int length, Offset offset) {
