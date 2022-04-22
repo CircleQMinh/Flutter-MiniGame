@@ -83,23 +83,26 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           width,
                           "/XiDach"),
                       modeButton(
-                          "Khủng Long",
-                          "Trò chơi khủng long!",
-                          FontAwesomeIcons.cookieBite,
-                          Colors.green,
-                          width,
-                          "/"),
-                      modeButton(
                           "Caro",
                           "Trò chơi caro!",
                           FontAwesomeIcons.timesCircle,
                           Colors.blue,
                           width,
                           "/tictactoe"),
-                      modeButton("Xếp hình", "Trò chơi xếp hình!",
-                          FontAwesomeIcons.square, Colors.red, width, "/tetris"),
-                      modeButton("Con rắn", "Trò chơi con rắn!",
-                          FontAwesomeIcons.chartLine, Colors.red, width, "/snake")
+                      modeButton(
+                          "Xếp hình",
+                          "Trò chơi xếp hình!",
+                          FontAwesomeIcons.square,
+                          Colors.red,
+                          width,
+                          "/tetris"),
+                      modeButton(
+                          "Con rắn",
+                          "Trò chơi con rắn!",
+                          FontAwesomeIcons.chartLine,
+                          Colors.red,
+                          width,
+                          "/snake")
                     ],
                   ),
                 ],
