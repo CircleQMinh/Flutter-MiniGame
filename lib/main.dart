@@ -29,10 +29,8 @@ class MyApp extends StatelessWidget {
         "/tictactoe": (context) => const TictactoePage(),
         "/tetris": (context) => const TetrisScreen(),
         "/snake": (context) => const SnakeApp(),
-
         "/ranking": (context) => RankingScreen(0),
-        "/submit": (context) => SubmitScoreScreen(0, 0)
-
+        "/submit": (context) => SubmitScoreScreen(0, 0),
         "/bubble": (context) => const BubbleApp()
       },
     );
