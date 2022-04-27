@@ -78,6 +78,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                       circButton(FontAwesomeIcons.cog, null),
                     ],
                   ),
+
                   Expanded(
                     child: Scrollbar(
                       isAlwaysShown: true,
@@ -124,6 +125,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   Colors.green,
                                   width,
                                   "/snake")
+                                                    modeButton("Bắn bong bóng",
+                          "Trò chơi bắn bong bóng!",
+                          FontAwesomeIcons.btc,
+                          Colors.red, width,
+                          "/bubble"),
                             ],
                           ),
                         ),
