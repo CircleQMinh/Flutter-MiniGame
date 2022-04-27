@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../extension/extension.dart';
 import '../../model/Tetris/Teris.dart';
+import '../../screen/shared/submit.dart';
 import 'BrickShape.dart';
 
 class TetrisWidget extends StatefulWidget {
@@ -124,6 +126,7 @@ class TetrisWidgetState extends State<TetrisWidget>
           randomBrick();
         } else {
           print("game over");
+          endGame();
         }
       }
 
@@ -206,50 +209,148 @@ class TetrisWidgetState extends State<TetrisWidget>
         .isNotEmpty;
   }
 
+  endGame() async {
+    animationController.stop();
+    await showDialog(
+      barrierDismissible: false, // user must tap button!
+      context: context,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                    "Thành tích của bạn đã được lưu lại. Bạn có muốn chia sẻ thành tích lên bảng xếp hạng?"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Có'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubmitScoreScreen(0, score),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('Không'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          title: const Text("Game Over!"),
+        ),
+      ),
+    );
+  }
+
+  Future<void> UpdateLocalScore() async {
+    var text = await loadUserScoreString(context);
+
+    var data = GetUserScore(text);
+
+    var currentScore = data["tetris"] ?? 0;
+    if (score > currentScore) {
+      data["tetris"] = score;
+    }
+    var newData = UserScoreToText(data);
+    final file = await localFile;
+    file.writeAsString(newData);
+  }
+
   pauseGame() async {
     animationController.stop();
     await showDialog(
+      barrierDismissible: false, // user must tap button!
       context: context,
-      builder: (context) => SimpleDialog(
-        children: [
-          const Text("Pause Game"),
-          ElevatedButton(
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text("Trò chơi đang tạm dừng"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Tiếp tục'),
               onPressed: () {
                 Navigator.of(context).pop();
                 animationController.forward();
               },
-              child: const Text("Resume"))
-        ],
+            ),
+          ],
+          title: const Text("Tạm dừng"),
+        ),
       ),
     );
   }
 
   resetGame() async {
     animationController.stop();
+    setState(() {
+      score = 0;
+    });
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => SimpleDialog(
-        children: [
-          const Text("Reset Game"),
-          ElevatedButton(
-            onPressed: () {
-              donePointsValue.value = [];
-              donePointsValue.notifyListeners();
-              listOfBricks.value = [];
-              listOfBricks.notifyListeners();
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('Reset/Start Game'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Reset'),
+              onPressed: () {
+                donePointsValue.value = [];
+                donePointsValue.notifyListeners();
+                listOfBricks.value = [];
+                listOfBricks.notifyListeners();
 
-              Navigator.of(context).pop();
+                Navigator.of(context).pop();
 
-              calculateSizeBox();
-              randomBrick(start: true);
-              animationController.reset();
-              animationController.stop();
-              animationController.forward();
-            },
-            child: const Text("Start/Reset"),
-          )
-        ],
+                calculateSizeBox();
+                randomBrick(start: true);
+                animationController.reset();
+                animationController.stop();
+                animationController.forward();
+              },
+            ),
+            TextButton(
+              child: const Text('Start'),
+              onPressed: () {
+                donePointsValue.value = [];
+                donePointsValue.notifyListeners();
+                listOfBricks.value = [];
+                listOfBricks.notifyListeners();
+
+                Navigator.of(context).pop();
+
+                calculateSizeBox();
+                randomBrick(start: true);
+                animationController.reset();
+                animationController.stop();
+                animationController.forward();
+              },
+            ),
+          ],
+          title: const Text("Reset/Start Game"),
+        ),
       ),
     );
   }
@@ -345,9 +446,9 @@ class TetrisWidgetState extends State<TetrisWidget>
                                 //wall by list before
 
                                 color: CheckIndexHitBase(index)
-                                    ? Colors.black54
+                                    ? Colors.black
                                     : Colors.transparent,
-                                border: Border.all(width: 1)),
+                                border: Border.all(width: 0.1)),
                             width: widget.sizePerSquare,
                             height: widget.sizePerSquare,
                             // child: Text(
@@ -438,7 +539,7 @@ Widget boxBrick(Color color, {text: ""}) {
     alignment: Alignment.center,
     decoration: BoxDecoration(
       color: color,
-      border: Border.all(width: 1),
+      border: Border.all(width: 0.1),
     ),
   );
 }

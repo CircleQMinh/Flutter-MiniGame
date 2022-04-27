@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   final void Function() onPressed;
   final String label;
-  const CustomButton({required this.onPressed, required this.label});
+  final Icon icon;
+  const CustomButton(
+      {required this.onPressed, required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
+    return ElevatedButton.icon(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.yellow),
+      ),
+      icon: icon,
       onPressed: onPressed,
-      child: Text(label),
-      color: Colors.brown[200],
+      label: Text(label, style: TextStyle(color: Colors.black)),
     );
   }
 }

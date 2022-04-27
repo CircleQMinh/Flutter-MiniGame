@@ -1,0 +1,1 @@
+tetris:20/snake:40/xidach:50
