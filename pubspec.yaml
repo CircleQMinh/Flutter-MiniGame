@@ -13,6 +13,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   font_awesome_flutter: ^9.2.0
   get: ^4.6.1
+  http: ^0.13.4
+  intl: ^0.17.0
+  path_provider: ^2.0.9
+  fluttertoast: ^8.0.9
 
 dev_dependencies:
   flutter_test:
@@ -23,5 +27,7 @@ flutter:
   uses-material-design: true
   assets: 
     - assets/
+    - assets/logo/
     - assets/rock_paper_scissor/
     - assets/xi_dach/
+    - assets/user.txt

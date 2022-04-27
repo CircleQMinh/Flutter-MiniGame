@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:minigame_app/screen/ranking.dart';
+import 'package:minigame_app/screen/shared/submit.dart';
 
 class MainMenuScreen extends StatefulWidget {
   @override
@@ -51,68 +53,88 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      circButton(FontAwesomeIcons.info, null),
                       circButton(
-                        FontAwesomeIcons.info,
-                      ),
+                          FontAwesomeIcons.medal,
+                          () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RankingScreen(0),
+                                  ),
+                                )
+                              }),
                       circButton(
-                        FontAwesomeIcons.medal,
-                      ),
-                      circButton(
-                        FontAwesomeIcons.lightbulb,
-                      ),
-                      circButton(
-                        FontAwesomeIcons.cog,
-                      ),
+                          FontAwesomeIcons.lightbulb,
+                          () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SubmitScoreScreen(1, 1090),
+                                  ),
+                                )
+                              }),
+                      circButton(FontAwesomeIcons.cog, null),
                     ],
                   ),
-                  Wrap(
-                    runSpacing: 16,
-                    children: [
-                      modeButton(
-                          "Rock Pager Scissor",
-                          "Trò chơi kéo búa bao!",
-                          FontAwesomeIcons.handScissors,
-                          Colors.amber,
-                          width,
-                          "/RPS"),
-                      modeButton(
-                          "Xì Dách",
-                          "Trò chơi xì dách!",
-                          FontAwesomeIcons.heart,
-                          Colors.deepOrange,
-                          width,
-                          "/XiDach"),
-                      modeButton(
-                          "Khủng Long",
-                          "Trò chơi khủng long!",
-                          FontAwesomeIcons.cookieBite,
-                          Colors.green,
-                          width,
-                          "/"),
-                      modeButton(
-                          "Caro",
-                          "Trò chơi caro!",
-                          FontAwesomeIcons.timesCircle,
-                          Colors.blue,
-                          width,
-                          "/tictactoe"),
-                      modeButton(
-                          "Xếp hình",
-                          "Trò chơi xếp hình!",
-                          FontAwesomeIcons.square,
-                          Colors.red, width,
-                          "/tetris"),
-                      modeButton("Con rắn",
-                          "Trò chơi con rắn!",
-                          FontAwesomeIcons.chartLine,
-                          Colors.red, width,
-                          "/snake"),
-                      modeButton("Bắn bong bóng",
+
+                  Expanded(
+                    child: Scrollbar(
+                      isAlwaysShown: true,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Wrap(
+                            direction: Axis.horizontal,
+                            runSpacing: 16,
+                            children: [
+                              modeButton(
+                                  "Rock Pager Scissor",
+                                  "Trò chơi kéo búa bao!",
+                                  FontAwesomeIcons.handScissors,
+                                  Colors.amber,
+                                  width,
+                                  "/RPS"),
+                              modeButton(
+                                  "Xì Dách",
+                                  "Trò chơi xì dách!",
+                                  FontAwesomeIcons.heart,
+                                  Colors.deepOrange,
+                                  width,
+                                  "/XiDach"),
+                              modeButton(
+                                  "Caro",
+                                  "Trò chơi caro!",
+                                  FontAwesomeIcons.timesCircle,
+                                  Colors.blue,
+                                  width,
+                                  "/tictactoe"),
+                              modeButton(
+                                  "Xếp hình",
+                                  "Trò chơi xếp hình!",
+                                  FontAwesomeIcons.square,
+                                  Colors.red,
+                                  width,
+                                  "/tetris"),
+                              modeButton(
+                                  "Con rắn",
+                                  "Trò chơi con rắn!",
+                                  FontAwesomeIcons.chartLine,
+                                  Colors.green,
+                                  width,
+                                  "/snake")
+                                                    modeButton("Bắn bong bóng",
                           "Trò chơi bắn bong bóng!",
                           FontAwesomeIcons.btc,
                           Colors.red, width,
                           "/bubble"),
-                    ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -121,11 +143,11 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         ));
   }
 
-  Padding circButton(IconData icon) {
+  Padding circButton(IconData icon, Function()? function) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: RawMaterialButton(
-        onPressed: null,
+        onPressed: function,
         fillColor: Colors.white,
         shape: const CircleBorder(),
         constraints: const BoxConstraints(minHeight: 35, minWidth: 35),
