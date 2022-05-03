@@ -44,7 +44,7 @@ class TetrisWidgetState extends State<TetrisWidget>
     //tính độ lớn size của khung chơi
     calculateSizeBox();
     animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 800));
     animation = Tween<double>(begin: 0, end: 1).animate(animationController)
       ..addListener(animationLoop);
 
@@ -180,7 +180,9 @@ class TetrisWidgetState extends State<TetrisWidget>
     List<BrickObjectDone> tempDonePoints = donePointsValue.value;
     //nếu có line thỏa dk
     if (lineDestroys.isNotEmpty) {
+      await playLocalSound("clear.mp3");
       lineDestroys.sort(((a, b) => a.compareTo(b)));
+
       tempDonePoints.sort(((a, b) => a.index.compareTo(b.index)));
       int firstIndex = tempDonePoints
           .indexWhere((element) => element.index == lineDestroys.first);
@@ -196,8 +198,9 @@ class TetrisWidgetState extends State<TetrisWidget>
           }
           return e;
         }).toList();
-        var increase = (lineDestroys.length * 10 / 11).ceil();
+        var increase = (lineDestroys.length * 10 / (numberOfCol - 2)).ceil();
         score += int.parse(increase.toString());
+
         donePointsValue.notifyListeners();
       }
     }
@@ -508,7 +511,7 @@ class TetrisWidgetState extends State<TetrisWidget>
     return levelBases.indexWhere((element) => element == index) != -1;
   }
 
-  transformBrick(Offset? move, bool? rotate) {
+  transformBrick(Offset? move, bool? rotate) async {
     if (move != null || rotate != null) {
       //get gạch hiện tại
       BrickObject currentObj =
@@ -518,6 +521,7 @@ class TetrisWidgetState extends State<TetrisWidget>
         target = currentObj.offset.translate(move.dx, move.dy);
         if (checkTargetMove(target, currentObj)) {
           currentObj.offset = target;
+          await playLocalSound("move.mp3");
           currentObj.calculatePointArray();
           listOfBricks.notifyListeners();
         }
@@ -525,6 +529,7 @@ class TetrisWidgetState extends State<TetrisWidget>
         currentObj.calculateRotation(1);
         if (checkTargetMove(currentObj.offset, currentObj)) {
           currentObj.calculatePointArray();
+          await playLocalSound("move.mp3");
           listOfBricks.notifyListeners();
         } else {
           currentObj.calculateRotation(-1);

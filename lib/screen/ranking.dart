@@ -16,7 +16,7 @@ class RankingScreen extends StatefulWidget {
 }
 
 class RankingScreenState extends State<RankingScreen> {
-  List<String> listOfGame = ["tetris", "xidach", "snake"];
+  List<String> listOfGame = ["tetris", "xidach", "snake", "bird", "bubble"];
   List<RankingInfo> listItems = [];
   Map<String, int> userScore = {};
   @override
@@ -163,11 +163,12 @@ class RankingScreenState extends State<RankingScreen> {
 
     //print(url.path);
     // Await the http get response, then decode the json-formatted response.
+    print(url);
     var response = await http.get(url);
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body) as Map<String, dynamic>;
       print(jsonResponse);
-      print(url);
+
       var rankingInfo = convertData(jsonResponse);
       // rankingInfo.forEach((element) {
       //   print(element.name);
@@ -244,6 +245,10 @@ String getFormatGameName(String text) {
       return "Xì Dách";
     case "snake":
       return "Snake";
+    case "bird":
+      return "Flappy Birb";
+    case "bubble":
+      return "Bubble Shot";
     default:
       return "";
   }

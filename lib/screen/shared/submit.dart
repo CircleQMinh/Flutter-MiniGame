@@ -17,7 +17,7 @@ class SubmitScoreScreen extends StatefulWidget {
 }
 
 class SubmitScoreState extends State<SubmitScoreScreen> {
-  List<String> listOfGame = ["tetris", "xidach", "snake"];
+  List<String> listOfGame = ["tetris", "xidach", "snake", "bird", "bubble"];
   List<RankingInfo> listItems = [];
   Map<String, int> userScore = {};
 
