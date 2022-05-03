@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.17.0
   path_provider: ^2.0.9
   fluttertoast: ^8.0.9
+  audioplayers: ^0.20.1
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +29,7 @@ flutter:
   assets: 
     - assets/
     - assets/logo/
+    - assets/sound/
     - assets/rock_paper_scissor/
     - assets/xi_dach/
     - assets/user.txt

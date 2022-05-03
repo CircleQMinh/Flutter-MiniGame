@@ -274,7 +274,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                             shape: CircleBorder(),
                                           ),
                                           child: IconButton(
-                                            onPressed: () => keyGlobal
+                                            onPressed: () async => keyGlobal
                                                 .currentState!
                                                 .transformBrick(
                                                     Offset(-sizePerSquare, 0),
@@ -296,7 +296,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                               shape: CircleBorder(),
                                             ),
                                             child: IconButton(
-                                              onPressed: () => keyGlobal
+                                              onPressed: () async => keyGlobal
                                                   .currentState!
                                                   .transformBrick(null, true),
                                               icon: const Icon(Icons
@@ -315,7 +315,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                             shape: CircleBorder(),
                                           ),
                                           child: IconButton(
-                                            onPressed: () => keyGlobal
+                                            onPressed: () async => keyGlobal
                                                 .currentState!
                                                 .transformBrick(
                                                     Offset(sizePerSquare, 0),
@@ -340,7 +340,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                             shape: CircleBorder(),
                                           ),
                                           child: IconButton(
-                                            onPressed: () => keyGlobal
+                                            onPressed: () async => keyGlobal
                                                 .currentState!
                                                 .transformBrick(
                                                     Offset(0, sizePerSquare),

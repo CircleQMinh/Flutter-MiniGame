@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:minigame_app/extension/extension.dart';
 import 'package:minigame_app/screen/ranking.dart';
 import 'package:minigame_app/screen/shared/submit.dart';
 
@@ -15,7 +16,13 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
     return Scaffold(
         backgroundColor: Colors.blue,
         body: Container(
-          color: const Color(0xFF272837),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/logo/back1.gif"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          // color: const Color(0xFF272837),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 20),
@@ -64,18 +71,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   ),
                                 )
                               }),
-                      circButton(
-                          FontAwesomeIcons.lightbulb,
-                          () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        SubmitScoreScreen(1, 1090),
-                                  ),
-                                )
-                              }),
-                      circButton(FontAwesomeIcons.cog, null),
                     ],
                   ),
                   Expanded(
@@ -89,13 +84,6 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                             direction: Axis.horizontal,
                             runSpacing: 16,
                             children: [
-                              modeButton(
-                                  "Rock Pager Scissor",
-                                  "Trò chơi kéo búa bao!",
-                                  FontAwesomeIcons.handScissors,
-                                  Colors.amber,
-                                  width,
-                                  "/RPS"),
                               modeButton(
                                   "Xì Dách",
                                   "Trò chơi xì dách!",
@@ -114,7 +102,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   "Xếp hình",
                                   "Trò chơi xếp hình!",
                                   FontAwesomeIcons.square,
-                                  Colors.red,
+                                  Colors.orangeAccent,
                                   width,
                                   "/tetris"),
                               modeButton(

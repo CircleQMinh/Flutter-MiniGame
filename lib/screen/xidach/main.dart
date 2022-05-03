@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:minigame_app/extension/extension.dart';
 
 import '../../widget/XiDach/cards_grid_view.dart';
 import '../../widget/XiDach/custom_button.dart';
@@ -183,6 +184,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
     var isXiDach = checkIfBlackJack(myCardsValue);
     if (isXiDach) {
       gameResult = "Win";
+      await playLocalSound("win.mp3");
       winCount += 1;
       coins += bet * 2;
     }
@@ -241,12 +243,13 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
   }
 
   //Add extra card to the player
-  void addCard() {
+  Future<void> addCard() async {
     if (gameResult != "") {
       showMyDialogMessage("Nhấn nút chơi tiếp để tiếp tục!");
       return;
     }
     print("Rút bài");
+    await playLocalSound("newcard.mp3");
     Random random = Random();
 
     if (playingCards.isNotEmpty) {
@@ -261,11 +264,13 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       var flush = checkIfFlush(myCardsValue);
       if (flush) {
         gameResult = "Win";
+        await playLocalSound("win.mp3");
         winCount += 1;
         coins += bet * 2;
       }
       if (playersScore > 21) {
         gameResult = "Lose";
+        await playLocalSound("lose.mp3");
         winCount = 0;
       }
       setState(() {});
@@ -288,6 +293,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
     await Future.delayed(const Duration(seconds: 1));
     while (dealersScore <= playersScore && dealersScore != 21) {
       await Future.delayed(const Duration(seconds: 1));
+      await playLocalSound("newcard.mp3");
       Random random = Random();
       String cardOneKey =
           playingCards.keys.elementAt(random.nextInt(playingCards.length));
@@ -302,12 +308,16 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       var isXiDach = checkIfBlackJack(dealersCardsValue);
       if (isXiDach) {
         gameResult = "Lose";
+        await playLocalSound("lose.mp3");
         winCount = 0;
+        break;
       }
       var flush = checkIfFlush(dealersCardsValue);
       if (flush) {
         gameResult = "Lose";
+        await playLocalSound("lose.mp3");
         winCount = 0;
+        break;
       }
       setState(() {
         dealersCards = dealersCards;
@@ -318,12 +328,14 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
 
     if (dealersScore > 21) {
       gameResult = "Win";
+      await playLocalSound("win.mp3");
       winCount += 1;
       coins += bet * 2;
       return;
     }
 
     if (dealersScore > playersScore) {
+      await playLocalSound("lose.mp3");
       gameResult = "Lose";
       winCount = 0;
       return;

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -78,10 +79,24 @@ Future<String> readFile() async {
 Future<String> loadUserScoreString(BuildContext context) async {
   var s = await readFile();
   if (s.isEmpty) {
-    String default_stat = "tetris:0/snake:0/xidach:0";
+    String default_stat = "tetris:0/snake:0/xidach:0/bird:0/bubles:0";
     await writeToFile(default_stat);
     s = await readFile();
   }
   print(s);
   return s;
+}
+
+Future<AudioPlayer> playLocalSound(String name) async {
+  final player = AudioCache(prefix: 'assets/sound/');
+
+  // call this method when desired
+  return await player.play(name, volume: 100);
+}
+
+Future<AudioPlayer> loopLocalSound(String name) async {
+  final player = AudioCache(prefix: 'assets/sound/');
+
+  // call this method when desired
+  return await player.loop(name, volume: 100);
 }
