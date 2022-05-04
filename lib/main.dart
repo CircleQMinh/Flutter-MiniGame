@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:minigame_app/screen/flaggyBird/Page/home_flaggy_bird.dart';
 
 import 'package:minigame_app/screen/ranking.dart';
 
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
         "/snake": (context) => const SnakeApp(),
         "/ranking": (context) => RankingScreen(0),
         "/submit": (context) => SubmitScoreScreen(0, 0),
-        "/bubble": (context) => const BubbleApp()
+        "/bubble": (context) => const BubbleApp(),
+        "/flappy": (context) => HomeFlaggyBirdPage()
       },
     );
   }

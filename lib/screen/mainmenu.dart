@@ -119,6 +119,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   Colors.red,
                                   width,
                                   "/bubble"),
+                              modeButton(
+                                  "Flappy Bird",
+                                  "Trò chơi flappy bird!",
+                                  FontAwesomeIcons.btc,
+                                  Colors.red,
+                                  width,
+                                  "/flappy"),
+
                             ],
                           ),
                         ),
