@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Bird extends StatelessWidget{
+class Bird extends StatelessWidget {
   final birdY;
   final double birdHeight;
   final double birdWidth;
@@ -9,9 +9,10 @@ class Bird extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment(0, birdY),//(2 * birdY * birdHeight) / (2 - birdHeight)
+      alignment:
+          Alignment(0, birdY), //(2 * birdY * birdHeight) / (2 - birdHeight)
       child: Image.asset(
-        '/flappy.png',
+        'assets/flappybirb/birb.png',
         width: birdWidth,
         height: birdHeight,
       ),
