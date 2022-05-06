@@ -32,4 +32,5 @@ flutter:
     - assets/sound/
     - assets/rock_paper_scissor/
     - assets/xi_dach/
+    - assets/flappybirb/
     - assets/user.txt
