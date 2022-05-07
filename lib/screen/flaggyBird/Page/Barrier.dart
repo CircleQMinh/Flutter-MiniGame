@@ -17,7 +17,7 @@ class Barrier extends StatelessWidget {
     return Container(
       // color: Colors.green,
       width: MediaQuery.of(context).size.width * barrierWidth / 2,
-      height: MediaQuery.of(context).size.height * 3 / 4 * barrierHeight / 2,
+      height: MediaQuery.of(context).size.height * 3 / 4 * barrierHeight,
       decoration: BoxDecoration(
           color: Colors.green,
           border: Border.all(width: 10, color: Colors.green.shade800),

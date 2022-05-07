@@ -156,7 +156,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
                           child: Barrier(
                               barrierX: barrierX[0],
                               barrierWidth: barrierWidth,
-                              barrierHeight: 200,
+                              barrierHeight: 0.4,
                               isThisBottomBarrier: true
                           )
                       ),
@@ -166,7 +166,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
                           child: Barrier(
                               barrierX: barrierX[0],
                               barrierWidth: barrierWidth,
-                              barrierHeight: 200,
+                              barrierHeight: 0.3,
                               isThisBottomBarrier: false
                           )
                       ),
