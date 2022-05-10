@@ -9,6 +9,7 @@ import 'package:minigame_app/screen/rock_paper_scissors/main.dart';
 import 'package:minigame_app/screen/shared/submit.dart';
 import 'package:minigame_app/screen/xidach/main.dart';
 import 'package:minigame_app/screen/tictactoe/pages/home/home_page.dart';
+import 'package:minigame_app/screen/xidach/online.dart';
 
 import 'screen/mainmenu.dart';
 import 'screen/tetris/main.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
         "/ranking": (context) => RankingScreen(0),
         "/submit": (context) => SubmitScoreScreen(0, 0),
         "/bubble": (context) => const BubbleApp(),
-        "/flappy": (context) => HomeFlaggyBirdPage()
+        "/flappy": (context) => HomeFlaggyBirdPage(),
+        "/XDOnline": (context) => XDOnlineScreen(),
       },
     );
   }

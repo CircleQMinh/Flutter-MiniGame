@@ -521,9 +521,9 @@ class TetrisWidgetState extends State<TetrisWidget>
         target = currentObj.offset.translate(move.dx, move.dy);
         if (checkTargetMove(target, currentObj)) {
           currentObj.offset = target;
-          await playLocalSound("move.mp3");
           currentObj.calculatePointArray();
           listOfBricks.notifyListeners();
+          await playLocalSound("move.mp3");
         }
       } else {
         currentObj.calculateRotation(1);

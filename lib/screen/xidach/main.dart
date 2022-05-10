@@ -307,6 +307,11 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       dealersScore = calculateScore(dealersCardsValue);
       var isXiDach = checkIfBlackJack(dealersCardsValue);
       if (isXiDach) {
+        if (checkIfBlackJack(myCardsValue)) {
+          gameResult = "Draw";
+          coins += bet;
+          break;
+        }
         gameResult = "Lose";
         await playLocalSound("lose.mp3");
         winCount = 0;
@@ -314,6 +319,11 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       }
       var flush = checkIfFlush(dealersCardsValue);
       if (flush) {
+        if (checkIfFlush(myCardsValue)) {
+          gameResult = "Draw";
+          coins += bet;
+          break;
+        }
         gameResult = "Lose";
         await playLocalSound("lose.mp3");
         winCount = 0;
@@ -325,12 +335,23 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       });
       print(dealersScore);
     }
-
+    setState(() {
+      dealersCards = dealersCards;
+      dealersCardsValue = dealersCardsValue;
+    });
     if (dealersScore > 21) {
       gameResult = "Win";
       await playLocalSound("win.mp3");
       winCount += 1;
       coins += bet * 2;
+      return;
+    }
+
+    if (dealersScore == playersScore) {
+      await playLocalSound("lose.mp3");
+      gameResult = "Draw";
+      coins += bet;
+      winCount = 0;
       return;
     }
 
@@ -457,9 +478,9 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
   }
 
   GestureDetector startButton(String title, String subtitle, IconData icon,
-      Color color, double width, String game) {
+      Color color, double width, String game, Function fun) {
     return GestureDetector(
-      onTap: () => {startNewMatch()},
+      onTap: () => {fun()},
       child: Container(
         width: width,
         decoration: BoxDecoration(
@@ -645,6 +666,10 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
         false;
   }
 
+  void MoveToOnlineScreen() {
+    Navigator.pushNamed(context, "/XDOnline");
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width - 80;
@@ -655,126 +680,139 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
         resizeToAvoidBottomInset: false,
         body: _isGameStarted
             ? SafeArea(
-                child: Container(
-                  color: Colors.green,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                        color: Colors.black,
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                top: 3,
-                                bottom: 3,
+                child: Scrollbar(
+                  isAlwaysShown: true,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Wrap(children: [
+                        Container(
+                          color: Colors.green,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                color: Colors.black,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                        top: 3,
+                                        bottom: 3,
+                                      ),
+                                      child: Text(
+                                        "Nút của nhà cái: $dealersScore",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: dealersScore > 21
+                                                ? Colors.red
+                                                : Colors.yellow),
+                                      ),
+                                    ),
+                                    CardsGridView(cards: dealersCards),
+                                  ],
+                                ),
                               ),
-                              child: Text(
-                                "Nút của nhà cái: $dealersScore",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: dealersScore > 21
-                                        ? Colors.red
-                                        : Colors.yellow),
+                              Container(
+                                color: Colors.black,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    getTurnText(gameTurn),
+                                  ],
+                                ),
                               ),
-                            ),
-                            CardsGridView(cards: dealersCards),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        color: Colors.black,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            getTurnText(gameTurn),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        color: Colors.black,
-                        child: Column(
-                          children: [
-                            CardsGridView(cards: myCards),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                top: 3,
-                                bottom: 3,
+                              Container(
+                                color: Colors.black,
+                                child: Column(
+                                  children: [
+                                    CardsGridView(cards: myCards),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                        top: 3,
+                                        bottom: 3,
+                                      ),
+                                      child: Text("Nút của bạn: $playersScore",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: playersScore > 21
+                                                ? Colors.red
+                                                : Colors.yellow,
+                                          )),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Text("Nút của bạn: $playersScore",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: playersScore > 21
-                                        ? Colors.red
-                                        : Colors.yellow,
-                                  )),
-                            ),
-                          ],
+                              SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Wrap(
+                                  direction: Axis.horizontal,
+                                  runSpacing: 6,
+                                  children: [
+                                    Center(child: getResultText(gameResult)),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text('Số xu của bạn : $coins',
+                                              textAlign: TextAlign.center),
+                                        ),
+                                        Expanded(
+                                          child: Text('Ván đấu: $round/10',
+                                              textAlign: TextAlign.center),
+                                        ),
+                                        Expanded(
+                                          child: Text('Số xu đã cược: $bet',
+                                              textAlign: TextAlign.center),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        CustomButton(
+                                          onPressed: () {
+                                            addCard();
+                                          },
+                                          label: "Rút bài",
+                                          icon: const Icon(Icons.add,
+                                              color: Colors.black),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8.0, right: 8),
+                                          child: CustomButton(
+                                            onPressed: () {
+                                              endTurn();
+                                            },
+                                            label: "Kết thúc",
+                                            icon: const Icon(Icons.stop_sharp,
+                                                color: Colors.black),
+                                          ),
+                                        ),
+                                        CustomButton(
+                                          onPressed: () {
+                                            startNewRound();
+                                          },
+                                          label: "Ván tiếp",
+                                          icon: const Icon(Icons.skip_next,
+                                              color: Colors.black),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          runSpacing: 6,
-                          children: [
-                            Center(child: getResultText(gameResult)),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text('Số xu của bạn : $coins',
-                                      textAlign: TextAlign.center),
-                                ),
-                                Expanded(
-                                  child: Text('Ván đấu: $round/10',
-                                      textAlign: TextAlign.center),
-                                ),
-                                Expanded(
-                                  child: Text('Số xu đã cược: $bet',
-                                      textAlign: TextAlign.center),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                CustomButton(
-                                  onPressed: () {
-                                    addCard();
-                                  },
-                                  label: "Rút bài",
-                                  icon: const Icon(Icons.add,
-                                      color: Colors.black),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 8.0, right: 8),
-                                  child: CustomButton(
-                                    onPressed: () {
-                                      endTurn();
-                                    },
-                                    label: "Kết thúc",
-                                    icon: const Icon(Icons.stop_sharp,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                CustomButton(
-                                  onPressed: () {
-                                    startNewRound();
-                                  },
-                                  label: "Ván tiếp",
-                                  icon: const Icon(Icons.skip_next,
-                                      color: Colors.black),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ]),
+                    ),
                   ),
                 ),
               )
@@ -818,17 +856,37 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                           Container(
                             child: Center(child: Image.asset(image_src)),
                           ),
-                          Wrap(
-                            runSpacing: 16,
-                            children: [
-                              startButton(
-                                  "Start Game!",
-                                  "Nhấn để bắt đầu trò chơi",
-                                  FontAwesomeIcons.playCircle,
-                                  Colors.red,
-                                  width,
-                                  ""),
-                            ],
+                          Expanded(
+                            child: Scrollbar(
+                              isAlwaysShown: true,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Wrap(
+                                    runSpacing: 16,
+                                    children: [
+                                      startButton(
+                                          "Start Game!",
+                                          "Nhấn để bắt đầu trò chơi",
+                                          FontAwesomeIcons.playCircle,
+                                          Colors.red,
+                                          width,
+                                          "",
+                                          startNewMatch),
+                                      startButton(
+                                          "Đấu Online!",
+                                          "Nhấn để tìm đối thủ online",
+                                          FontAwesomeIcons.playCircle,
+                                          Colors.green,
+                                          width,
+                                          "",
+                                          MoveToOnlineScreen),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
