@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minigame_app/model/Tetris/Teris.dart';
+import '../../extension/extension.dart';
 import '../../widget/Tetris/BrickShape.dart';
 import '../../widget/Tetris/TetrisWidget.dart';
 
@@ -34,6 +35,8 @@ class _TetrisScreenState extends State<TetrisScreen> {
               })
             });
     print("init");
+    List<String> sounds = ["clear.mp3", "move.mp3"];
+    prepareLocalSound(sounds);
     super.initState();
   }
 
@@ -179,7 +182,9 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                               keyGlobal.currentState!
                                                   .resetGame();
                                             },
-                                            child: const Text("Start/Reset")),
+                                            child: Text(keyGlobal.currentState
+                                                    ?.gameStartBtn ??
+                                                "Start")),
                                         ElevatedButton(
                                             style: ButtonStyle(
                                                 backgroundColor:
@@ -198,6 +203,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                               ),
                               Container(
                                 width: constraints.biggest.width / 2,
+                                height: constraints.biggest.height / 5,
                                 color: Colors.yellow,
                                 child: Column(
                                   children: [
@@ -243,8 +249,18 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                 return TetrisWidget(
                                     //sent size
                                     // constraints.biggest
-                                    Size(MediaQuery.of(context).size.width,
-                                        sizePerSquare * 15),
+                                    Size(
+                                        MediaQuery.of(context).size.width,
+                                        (MediaQuery.of(context).size.height) -
+                                            (MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                7) -
+                                            (MediaQuery.of(context)
+                                                    .size
+                                                    .height /
+                                                6) -
+                                            sizePerSquare),
                                     key: keyGlobal,
                                     //size per box brick
                                     sizePerSquare: sizePerSquare,
@@ -260,6 +276,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                           //controller
                           Container(
                             color: Colors.red,
+                            height: constraints.biggest.height / 6,
                             child: Column(
                               children: [
                                 Row(
