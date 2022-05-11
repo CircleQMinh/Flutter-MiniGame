@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minigame_app/extension/extension.dart';
 import 'package:minigame_app/screen/ranking.dart';
@@ -60,7 +61,17 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      circButton(FontAwesomeIcons.info, null),
+                      circButton(
+                          FontAwesomeIcons.info,
+                          () => {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        "Phiên bản ngày 10:57 11/05!", // message
+                                    toastLength: Toast.LENGTH_SHORT, // length
+                                    gravity: ToastGravity.SNACKBAR, // location
+                                    timeInSecForIosWeb: 1 // duration
+                                    )
+                              }),
                       circButton(
                           FontAwesomeIcons.medal,
                           () => {

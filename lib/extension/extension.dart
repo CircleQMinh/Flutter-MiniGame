@@ -88,6 +88,11 @@ Future<String> loadUserScoreString(BuildContext context) async {
   return s;
 }
 
+Future<void> prepareLocalSound(List<String> names) async {
+  final player = AudioCache(prefix: 'assets/sound/');
+  await player.loadAll(names);
+}
+
 Future<AudioPlayer> playLocalSound(String name) async {
   final player = AudioCache(prefix: 'assets/sound/');
 
