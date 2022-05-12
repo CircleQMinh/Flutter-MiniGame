@@ -46,6 +46,9 @@ class SubmitScoreState extends State<SubmitScoreForm> {
             style: TextStyle(color: Colors.white),
             decoration: const InputDecoration(
                 labelText: 'Nhập tên của bạn',
+                labelStyle: TextStyle(
+                  color: Colors.white,
+                ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   borderSide: BorderSide(color: Colors.white, width: 0.0),

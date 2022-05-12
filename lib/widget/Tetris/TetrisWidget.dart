@@ -37,6 +37,7 @@ class TetrisWidgetState extends State<TetrisWidget>
   ValueNotifier<int> animationPosTickValue = ValueNotifier<int>(0);
   //điểm
   int score = 0;
+  String gameStartBtn = "Start";
   @override
   void initState() {
     super.initState();
@@ -312,13 +313,13 @@ class TetrisWidgetState extends State<TetrisWidget>
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                const Text('Reset/Start Game'),
+                const Text(""),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Reset'),
+              child: const Text('OK'),
               onPressed: () {
                 donePointsValue.value = [];
                 donePointsValue.notifyListeners();
@@ -327,6 +328,9 @@ class TetrisWidgetState extends State<TetrisWidget>
 
                 Navigator.of(context).pop();
 
+                setState(() {
+                  gameStartBtn = "Reset";
+                });
                 calculateSizeBox();
                 randomBrick(start: true);
                 animationController.reset();
@@ -335,24 +339,14 @@ class TetrisWidgetState extends State<TetrisWidget>
               },
             ),
             TextButton(
-              child: const Text('Start'),
+              child: const Text('Không'),
               onPressed: () {
-                donePointsValue.value = [];
-                donePointsValue.notifyListeners();
-                listOfBricks.value = [];
-                listOfBricks.notifyListeners();
-
                 Navigator.of(context).pop();
-
-                calculateSizeBox();
-                randomBrick(start: true);
-                animationController.reset();
-                animationController.stop();
-                animationController.forward();
               },
             ),
           ],
-          title: const Text("Reset/Start Game"),
+          title:
+              Text(gameStartBtn == "Start" ? "Bắt đầu game?" : "Reset game?"),
         ),
       ),
     );
@@ -392,13 +386,16 @@ class TetrisWidgetState extends State<TetrisWidget>
   }
 
   BrickObject getNewBrickPos() {
+    var numberOfCol = sizeBox.width ~/ widget.sizePerSquare!;
+
     return BrickObject(
       size: Size.square(widget.sizePerSquare!),
       sizeLayout: sizeBox,
       color:
           Colors.primaries[Random().nextInt(Colors.primaries.length)].shade800,
       rotation: Random().nextInt(4),
-      offset: Offset(widget.sizePerSquare! * 4, -widget.sizePerSquare! * 4),
+      offset: Offset(((numberOfCol - 2) ~/ 2) * widget.sizePerSquare!,
+          -widget.sizePerSquare! * 4),
       shapeEnum:
           BrickShapeEnum.values[Random().nextInt(BrickShapeEnum.values.length)],
     );
@@ -517,13 +514,18 @@ class TetrisWidgetState extends State<TetrisWidget>
       BrickObject currentObj =
           listOfBricks.value[listOfBricks.value.length - 2];
       late Offset target;
+
       if (move != null) {
+        if (currentObj.offset.dy < 0 && move.dy == 0) {
+          print("Không cho di chuyển vì chưa xuất hiện");
+          return;
+        }
         target = currentObj.offset.translate(move.dx, move.dy);
         if (checkTargetMove(target, currentObj)) {
           currentObj.offset = target;
-          await playLocalSound("move.mp3");
           currentObj.calculatePointArray();
           listOfBricks.notifyListeners();
+          await playLocalSound("move.mp3");
         }
       } else {
         currentObj.calculateRotation(1);
