@@ -13,37 +13,46 @@ class HomeFlaggyBirdPage extends StatefulWidget {
 class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
 
   static double birdY = 0;
-  double birdHeight = 50;
-  double birdWidth = 50;
+  double birdHeight = 0.2;
+  double birdWidth = 0.2;
   double initialPos = birdY;
   double height = 0;
   double time = 0;
   double gravity = -4.9;
-  double velocity = 2.7;
+  double velocity = 2;
+
+  int score = 0;
 
   bool gameHasStarted = false;
 
-  static List<double> barrierX = [2, 2+ 1.5];
-  static double barrierWidth = 0.5;
+  static List<double> barrierX = [1, 2.5];
+  static double barrierWidth = 0.2;
   List<List<double>> barrierHeight = [
-    [0.6, 0.4],
-    [0.4, 0.6]
+    [0.4, 0.3],
+    [0.3, 0.4]
   ];
 
   double barrierXone = 1;
 
   void startGame(){
     gameHasStarted = true;
+    score = 0;
     Timer.periodic(Duration(milliseconds: 50), (timer) {
       time += 0.05;
       height = gravity * time * time + velocity * time;
       setState(() {
         if(barrierXone < -1.1){
-          barrierXone += 2.2;
+          barrierXone += 3.6;
         } else {
           barrierXone -= 0.03;
         }
-
+        for(int i = 0 ; i < barrierX.length; i++){
+          if(barrierX[i] < -1.1){
+            barrierX[i] += 3.5;
+          } else {
+            barrierX[i] -= 0.03;
+          }
+        }
         birdY = initialPos - height;
       });
 
@@ -57,6 +66,13 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
 
       time += 0.01;
     });
+
+    Timer.periodic(Duration(milliseconds: 1000), (timer1) {
+      score++;
+      if(birdIsDead()){
+        timer1.cancel();
+      }
+    });
   }
 
   void resetGame(){
@@ -66,6 +82,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
       gameHasStarted = false;
       time = 0;
       initialPos = birdY;
+      barrierX = [2, 2+ 1.5];
     });
   }
 
@@ -119,14 +136,14 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
       return true;
     }
 
-    // for(int i = 0; i < barrierX.length; i++){
-    //   if(barrierX[i] <= birdWidth
-    //       && barrierX[i] + barrierWidth >= -birdWidth
-    //       && (birdY <= -1 + barrierHeight[i][0] ||  birdY + birdHeight >= 1- barrierHeight[i][1]))
-    //   {
-    //     return true;
-    //   }
-    // }
+    for(int i = 0; i < barrierX.length; i++){
+      if(barrierX[i] <= birdWidth
+          && barrierX[i] + barrierWidth >= -birdWidth
+          && (birdY <= -0.9 + barrierHeight[i][0] ||  birdY + birdHeight >= 0.9- barrierHeight[i][1]))
+      {
+        return true;
+      }
+    }
 
     return false;
   }
@@ -147,29 +164,52 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
                     children: [
                       Bird(
                           birdY: birdY,
-                          birdHeight: birdHeight,
-                          birdWidth: birdWidth
+                          birdHeight: MediaQuery.of(context).size.width * birdHeight,
+                          birdWidth: MediaQuery.of(context).size.width * birdWidth
                       ),
                       AnimatedContainer(
-                          alignment: Alignment(barrierXone, 1.1),
+                          alignment: Alignment(barrierX[0], 1.1),
                           duration: Duration(milliseconds: 0),
                           child: Barrier(
                               barrierX: barrierX[0],
                               barrierWidth: barrierWidth,
-                              barrierHeight: 0.4,
+                              barrierHeight: barrierHeight[0][0],
                               isThisBottomBarrier: true
                           )
                       ),
                       AnimatedContainer(
-                          alignment: Alignment(barrierXone, -1.1),
+                          alignment: Alignment(barrierX[0], -1.1),
                           duration: Duration(milliseconds: 0),
                           child: Barrier(
                               barrierX: barrierX[0],
                               barrierWidth: barrierWidth,
-                              barrierHeight: 0.3,
+                              barrierHeight: barrierHeight[0][1],
                               isThisBottomBarrier: false
                           )
                       ),
+
+                      AnimatedContainer(
+                          alignment: Alignment(barrierX[1], 1.1),
+                          duration: Duration(milliseconds: 0),
+                          child: Barrier(
+                              barrierX: barrierX[1],
+                              barrierWidth: barrierWidth,
+                              barrierHeight: barrierHeight[1][0],
+                              isThisBottomBarrier: true
+                          )
+                      ),
+                      AnimatedContainer(
+                          alignment: Alignment(barrierX[1], -1.1),
+                          duration: Duration(milliseconds: 0),
+                          child: Barrier(
+                              barrierX: barrierX[1],
+                              barrierWidth: barrierWidth,
+                              barrierHeight: barrierHeight[1][1],
+                              isThisBottomBarrier: false
+                          )
+                      ),
+
+
                       Container(
                         alignment: Alignment(0, -0.5),
                         child: Text(
@@ -196,7 +236,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
                           children: [
                             Text("SCORE", style: const TextStyle(color: Colors.white, fontSize: 20)),
                             SizedBox(height: 20,),
-                            Text("0", style: const TextStyle(color: Colors.white, fontSize: 35))
+                            Text(score.toString(), style: const TextStyle(color: Colors.white, fontSize: 35))
                           ],
                         ),
                         Column(
