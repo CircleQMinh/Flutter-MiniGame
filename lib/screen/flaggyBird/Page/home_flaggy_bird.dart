@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:minigame_app/screen/flaggyBird/Page/Barrier.dart';
 import 'package:minigame_app/screen/flaggyBird/Page/bird.dart';
+import '../../../screen/shared/submit.dart';
 
 class HomeFlaggyBirdPage extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
   double velocity = 2;
 
   int score = 0;
+  int highScore = 0;
 
   bool gameHasStarted = false;
 
@@ -61,13 +63,18 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
       if(birdIsDead()){
         timer.cancel();
         gameHasStarted = false;
+        if(score > highScore){
+          this.setState(() {
+            highScore = score;
+          });
+        }
         _showDialog();
       }
 
       time += 0.01;
     });
 
-    Timer.periodic(Duration(milliseconds: 1000), (timer1) {
+    Timer.periodic(Duration(milliseconds: 3000), (timer1) {
       score++;
       if(birdIsDead()){
         timer1.cancel();
@@ -77,13 +84,55 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
 
   void resetGame(){
     Navigator.pop(context);
+    endGame();
     setState(() {
       birdY = 0;
       gameHasStarted = false;
       time = 0;
       initialPos = birdY;
-      barrierX = [2, 2+ 1.5];
+      barrierX = [1, 2.5];
     });
+  }
+
+  endGame() async {
+    await showDialog(
+      barrierDismissible: false, // user must tap button!
+      context: context,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                    "Thành tích của bạn đã được lưu lại. Bạn có muốn chia sẻ thành tích lên bảng xếp hạng?"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Có'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubmitScoreScreen(3, score),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('Không'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          title: const Text("Game Over!"),
+        ),
+      ),
+    );
   }
 
   void _showDialog(){
@@ -244,7 +293,7 @@ class _HomeFlaggyBirdPageState extends State<HomeFlaggyBirdPage>{
                           children: [
                             Text("BEST", style: const TextStyle(color: Colors.white, fontSize: 20)),
                             SizedBox(height: 20,),
-                            Text("10", style: const TextStyle(color: Colors.white, fontSize: 35))
+                            Text(highScore.toString(), style: const TextStyle(color: Colors.white, fontSize: 35))
                           ],
                         )
                       ],
