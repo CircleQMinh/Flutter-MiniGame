@@ -107,8 +107,13 @@ class HostMatchOnlineScreenState extends State<HostMatchOnlineScreen> {
     String image_src = "assets/logo/blackjack.png";
     // TODO: implement build
     void onExit() {
-      current_match.status = 5;
-      UpdateCurrentMatch();
+      try {
+        current_match.status = 5;
+        UpdateCurrentMatch();
+      } catch (e) {
+        Navigator.of(context).pop(true);
+      }
+
       Navigator.of(context).pop(true);
     }
 
@@ -291,7 +296,9 @@ class HostMatchOnlineScreenState extends State<HostMatchOnlineScreen> {
                     Center(
                       child: Text(
                         getStatusString(),
-                        style: Theme.of(context).textTheme.headline4,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Center(child: getGameCodeText()),
@@ -496,8 +503,12 @@ class HostMatchOnlineScreenState extends State<HostMatchOnlineScreen> {
     });
 
     while (true) {
-      var wait = await WaitForPlayer2(match.code);
-      if (wait) {
+      try {
+        var wait = await WaitForPlayer2(match.code);
+        if (wait) {
+          break;
+        }
+      } catch (e) {
         break;
       }
     }
@@ -526,7 +537,10 @@ class HostMatchOnlineScreenState extends State<HostMatchOnlineScreen> {
         player2CardsValue.add(deckOfCards[element]!);
         player2Score = calculateScore(player2CardsValue);
       });
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
+
       if (m.player2.status == 1 || m.player2.status == 2) {
         return true;
       }
