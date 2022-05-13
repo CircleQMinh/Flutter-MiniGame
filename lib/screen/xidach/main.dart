@@ -310,11 +310,13 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
         if (checkIfBlackJack(myCardsValue)) {
           gameResult = "Draw";
           coins += bet;
+          setState(() {});
           break;
         }
         gameResult = "Lose";
         await playLocalSound("lose.mp3");
         winCount = 0;
+        setState(() {});
         break;
       }
       var flush = checkIfFlush(dealersCardsValue);
@@ -327,6 +329,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
         gameResult = "Lose";
         await playLocalSound("lose.mp3");
         winCount = 0;
+        setState(() {});
         break;
       }
       setState(() {
@@ -335,15 +338,13 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       });
       print(dealersScore);
     }
-    setState(() {
-      dealersCards = dealersCards;
-      dealersCardsValue = dealersCardsValue;
-    });
+
     if (dealersScore > 21) {
       gameResult = "Win";
       await playLocalSound("win.mp3");
       winCount += 1;
       coins += bet * 2;
+      setState(() {});
       return;
     }
 
@@ -352,6 +353,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       gameResult = "Draw";
       coins += bet;
       winCount = 0;
+      setState(() {});
       return;
     }
 
@@ -359,6 +361,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
       await playLocalSound("lose.mp3");
       gameResult = "Lose";
       winCount = 0;
+      setState(() {});
       return;
     }
   }

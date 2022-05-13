@@ -110,8 +110,13 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
     String image_src = "assets/logo/blackjack.png";
     // TODO: implement build
     void onExit() {
-      current_match.status = 5;
-      UpdateCurrentMatch();
+      try {
+        current_match.status = 5;
+        UpdateCurrentMatch();
+      } catch (e) {
+        Navigator.of(context).pop(true);
+      }
+
       Navigator.of(context).pop(true);
     }
 
@@ -143,6 +148,7 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.blue,
         body: _isGameStarted
             ? SafeArea(
@@ -286,32 +292,37 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
                   ),
                 ),
               )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Center(child: Image.asset(image_src)),
-                    Center(
-                      child: Text(
-                        getStatusString(),
-                        style: Theme.of(context).textTheme.headline4,
+            : Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Center(child: Image.asset(image_src)),
+                      Center(
+                        child: Text(
+                          getStatusString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.red,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 50, vertical: 20),
-                              textStyle: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold)),
-                          onPressed: AsyncOpenUserInputModal,
-                          child: Text(
-                            "Nhập mã ván đấu!",
-                          )),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.red,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 20),
+                                textStyle: TextStyle(
+                                    fontSize: 30, fontWeight: FontWeight.bold)),
+                            onPressed: AsyncOpenUserInputModal,
+                            child: Text(
+                              "Nhập mã ván đấu!",
+                            )),
+                      ),
+                    ],
+                  ),
                 ),
               ),
       ),
@@ -322,7 +333,7 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
     if (_isGameJoined) {
       return "Đã tham gia thành công, chờ khởi tạo ván đấu...";
     } else {
-      return "Nhập mã ván đấu để tham gia";
+      return "Nhập mã ván đấu để tham gia.";
     }
   }
 
@@ -440,8 +451,12 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
     setState(() {});
 
     while (true) {
-      var wait = await WaitForPlayer1();
-      if (wait) {
+      try {
+        var wait = await WaitForPlayer1();
+        if (wait) {
+          break;
+        }
+      } catch (e) {
         break;
       }
     }
@@ -463,51 +478,48 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
     await showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: AlertDialog(
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text("Nhập mã ván đấu"),
-                TextField(
-                  controller: _textFieldController,
-                  decoration: InputDecoration(hintText: "Nhập mã ván đấu..."),
-                ),
-              ],
-            ),
+      builder: (context) => AlertDialog(
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text("Nhập mã ván đấu"),
+              TextField(
+                controller: _textFieldController,
+                decoration: InputDecoration(hintText: "Nhập mã ván đấu..."),
+              ),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Tiếp tục'),
-              onPressed: () {
-                try {
-                  print(_textFieldController.text);
-                  var input = _textFieldController.text;
-                  if (input.isEmpty) {
-                    Fluttertoast.showToast(
-                        msg: "Bạn phải nhập mã ván đấu!", // message
-                        toastLength: Toast.LENGTH_SHORT, // length
-                        gravity: ToastGravity.CENTER, // location
-                        timeInSecForIosWeb: 1 // duration
-                        );
-                  } else {
-                    setState(() {});
-                    Navigator.of(context).pop();
-                  }
-                } catch (e) {
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Tiếp tục'),
+            onPressed: () {
+              try {
+                print(_textFieldController.text);
+                var input = _textFieldController.text;
+                if (input.isEmpty) {
                   Fluttertoast.showToast(
-                      msg: "Không hợp lệ!", // message
+                      msg: "Bạn phải nhập mã ván đấu!", // message
                       toastLength: Toast.LENGTH_SHORT, // length
                       gravity: ToastGravity.CENTER, // location
                       timeInSecForIosWeb: 1 // duration
                       );
+                } else {
+                  setState(() {});
+                  Navigator.of(context).pop();
                 }
-              },
-            ),
-          ],
-          title: const Text("Đặt cược"),
-        ),
+              } catch (e) {
+                Fluttertoast.showToast(
+                    msg: "Không hợp lệ!", // message
+                    toastLength: Toast.LENGTH_SHORT, // length
+                    gravity: ToastGravity.CENTER, // location
+                    timeInSecForIosWeb: 1 // duration
+                    );
+              }
+            },
+          ),
+        ],
+        title: const Text("Hướng dẫn"),
       ),
     );
   }
@@ -653,7 +665,10 @@ class JoinMatchOnlineScreenState extends State<JoinMatchOnlineScreen> {
         player1CardsValue.add(deckOfCards[element]!);
         player1Score = calculateScore(player1CardsValue);
       }
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
+
       if (m.player1.status == 1 || m.player1.status == 2) {
         return true;
       }

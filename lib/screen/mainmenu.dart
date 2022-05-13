@@ -66,7 +66,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           () => {
                                 Fluttertoast.showToast(
                                     msg:
-                                        "Phiên bản ngày 10:57 11/05!", // message
+                                        "Phiên bản ngày 13:55 13/05!", // message
                                     toastLength: Toast.LENGTH_SHORT, // length
                                     gravity: ToastGravity.SNACKBAR, // location
                                     timeInSecForIosWeb: 1 // duration
