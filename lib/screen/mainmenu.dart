@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:minigame_app/extension/extension.dart';
 import 'package:minigame_app/screen/ranking.dart';
@@ -60,7 +61,17 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      circButton(FontAwesomeIcons.info, null),
+                      circButton(
+                          FontAwesomeIcons.info,
+                          () => {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        "Phiên bản ngày 13:55 13/05!", // message
+                                    toastLength: Toast.LENGTH_SHORT, // length
+                                    gravity: ToastGravity.SNACKBAR, // location
+                                    timeInSecForIosWeb: 1 // duration
+                                    )
+                              }),
                       circButton(
                           FontAwesomeIcons.medal,
                           () => {
@@ -116,17 +127,16 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                                   "Bắn bong bóng",
                                   "Trò chơi bắn bong bóng!",
                                   FontAwesomeIcons.btc,
-                                  Colors.red,
+                                  Colors.pink,
                                   width,
                                   "/bubble"),
                               modeButton(
                                   "Flappy Bird",
                                   "Trò chơi flappy bird!",
-                                  FontAwesomeIcons.btc,
-                                  Colors.red,
+                                  FontAwesomeIcons.kiwiBird,
+                                  Colors.lime,
                                   width,
                                   "/flappy"),
-
                             ],
                           ),
                         ),

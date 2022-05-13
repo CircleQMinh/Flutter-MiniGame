@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -87,16 +88,68 @@ Future<String> loadUserScoreString(BuildContext context) async {
   return s;
 }
 
+Future<void> prepareLocalSound(List<String> names) async {
+  final player = AudioCache(prefix: 'assets/sound/');
+  await player.loadAll(names);
+}
+
 Future<AudioPlayer> playLocalSound(String name) async {
   final player = AudioCache(prefix: 'assets/sound/');
 
   // call this method when desired
-  return await player.play(name, volume: 100);
+  return await player.play(name, volume: 1);
 }
 
 Future<AudioPlayer> loopLocalSound(String name) async {
   final player = AudioCache(prefix: 'assets/sound/');
 
   // call this method when desired
-  return await player.loop(name, volume: 100);
+  return await player.loop(name, volume: 1);
+}
+
+const _chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
+int calculateScore(List<int> cards) {
+  // 3,11,11  -> 3,át,át
+  int score = 0;
+  for (int value in cards) {
+    if (value == 11) {
+      score += 1;
+    } else {
+      score += value;
+    }
+  }
+  //5
+  for (int value in cards) {
+    if (value == 11) {
+      if (score + 10 <= 21) {
+        score += 10;
+      }
+    }
+    //15
+    //16
+  }
+  return score;
+}
+
+bool checkIfBlackJack(List<int> cards) {
+  if (cards.length == 2) {
+    if (cards[0] == 10 && cards[1] == 11 ||
+        cards[0] == 11 && cards[1] == 11 ||
+        cards[1] == 10 && cards[0] == 11) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool checkIfFlush(List<int> cards) {
+  if (cards.length == 5 && calculateScore(cards) <= 21) {
+    return true;
+  }
+  return false;
 }
