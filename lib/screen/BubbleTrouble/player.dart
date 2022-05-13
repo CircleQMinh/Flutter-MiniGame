@@ -12,9 +12,9 @@ class MyPlayer extends StatelessWidget{
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          color: Colors.deepPurple,
-          height: 50,
+          height: 80,
           width: 50,
+          child: Image.asset('assets/bubble/player.png'),
         ),
       ),
     );

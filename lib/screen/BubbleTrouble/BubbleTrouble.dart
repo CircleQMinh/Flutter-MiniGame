@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minigame_app/screen/BubbleTrouble/Ball.dart';
+import 'package:minigame_app/screen/BubbleTrouble/Missile.dart';
+import 'package:minigame_app/screen/BubbleTrouble/ShowPoint.dart';
 import 'package:minigame_app/screen/BubbleTrouble/player.dart';
 
 import 'button.dart';
@@ -11,40 +15,211 @@ class BubbleTroublePage extends StatefulWidget{
   _BubbleTroublePage createState () => _BubbleTroublePage();
 }
 
+enum direction { LEFT, RIGHT }
+
 class _BubbleTroublePage extends State<BubbleTroublePage> {
+
+  bool isStartGame = false;
+
   // vi tri nguoi choi
-  double playerX = 0;
+  static double playerX = 0;
+
+  int point = 0;
 
   // bien vi tri mui ten
-  double missibleX = 0;
-  double missibleY = 1;
+  double missileX = playerX;
+  double missileHeight = 10;
+  bool missShot = false;
+
+  // Bien ball
+  double ballX = 0.5;
+  double ballY = 0;
+
+  var ballDirection = direction.LEFT;
+
+  startGame() {
+
+    if(isStartGame) {
+      return;
+    }
+    Random rnd;
+    rnd = new Random();
+    if(!isStartGame) {
+      var isLeft = rnd.nextBool();
+      double r = (isLeft ? -1 : 1) * rnd.nextInt(100).toDouble()*0.01;
+      setState(() {
+        if(rnd.nextInt(2) % 2 == 0) {
+          ballDirection = direction.RIGHT;
+        }
+        else {
+          ballDirection = direction.LEFT;
+        }
+        playerX = 0;
+        missileX = playerX;
+        missileHeight = 10;
+        missShot = false;
+        ballX = r;
+        ballY = 0;
+        isStartGame = true;
+        point = 0;
+      });
+    }
+
+    double time = rnd.nextInt(100).toDouble()*0.01;
+    double height = 0;
+    double velocity = 65;
+
+    Timer.periodic(Duration(milliseconds: 10), (timer) {
+
+      height = -4*time*time + velocity*time;
+
+      // Neu cham vao nen thi nhay len lai
+      if(height < 0) {
+        time = 0;
+      }
+
+      // cap nhat vi tri bong
+      setState(() {
+        ballY = heightToPosition(height);
+      });
+
+      time+=0.1;
+
+      // Neu cham vao tuong trai
+      if(ballX - 0.005 < -1) {
+        ballDirection = direction.RIGHT;
+        // Neu bong cham vao tuong phai
+      } else if(ballX + 0.005 > 1) {
+        ballDirection = direction.LEFT;
+      }
+
+      // Di chuyen bong dung huong
+      if(ballDirection == direction.LEFT) {
+        setState(() {
+          ballX -= 0.005;
+        });
+      } else if(ballDirection == direction.RIGHT) {
+        setState(() {
+          ballX += 0.005;
+        });
+      }
+
+      // Neu bong cham vao nguoi thi chet
+      if(playerDead()) {
+        timer.cancel();
+        setState(() {
+          ballX = 0.5;
+          isStartGame = false;
+        });
+        showInfoDialog();
+      }
+    });
+  }
+
+  showInfoDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("You dead", style: TextStyle(color: Colors.black))
+          );
+        }
+    );
+  }
+
+  bool playerDead () {
+    if((ballX - playerX).abs() < 0.15 && ballY > 0.95) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 
   moveL() {
-    print('Left');
+    if(!isStartGame) {
+      return;
+    }
     setState(() {
       if(playerX - 0.1 < -1) {
       } else {
         playerX -= 0.1;
       }
+
+      if(!missShot) {
+        missileX = playerX;
+      }
     });
   }
 
   moveR() {
-    print('Right');
+
+    if(!isStartGame) {
+      return;
+    }
 
     setState(() {
       if(playerX + 0.1 > 1) {
       } else {
         playerX += 0.1;
       }
+
+      if(!missShot) {
+        missileX = playerX;
+      }
     });
   }
 
   fireMissile() {
-    Timer.periodic(Duration(milliseconds: 100), (timer) {
-      setState(() {
-        missibleY -= 0.1;
+
+    if(!isStartGame) {
+      return;
+    }
+
+    if(!missShot) {
+      Timer.periodic(Duration(milliseconds: 15), (timer) {
+        // Ban trung
+        missShot = true;
+
+        // Vien dan len top man hinh
+        setState(() {
+          missileHeight += 10;
+        });
+
+        // dung vien dan khi no cham vao top Height
+        if(missileHeight >= MediaQuery.of(context).size.height*0.6){
+          missileX = playerX;
+          missileHeight = 10;
+          timer.cancel();
+          resetMissile();
+        }
+
+        // kiem tra neu vien dan cham vao bong
+        if(ballY > heightToPosition(missileHeight) &&
+          (ballX - missileX).abs() < 0.03) {
+          setState(() {
+            point += 1;
+          });
+          resetMissile();
+          ballX = 0.5;
+          timer.cancel();
+        }
       });
+    }
+  }
+
+  // chuyen doi chieu cao sang toa do
+  double heightToPosition(double height) {
+    double totalHeight = MediaQuery.of(context).size.height * 3/4;
+    double position = 1 - 2*height/totalHeight;
+    return position;
+  }
+
+  resetMissile() {
+    setState(() {
+      missileX = playerX;
+      missileHeight = 10;
+      missShot = false;
     });
   }
 
@@ -69,28 +244,42 @@ class _BubbleTroublePage extends State<BubbleTroublePage> {
           Expanded(
             flex: 3,
             child: Container(
-              color: Colors.pink.shade100,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage("assets/bubble/background.webp"),
+                      fit: BoxFit.cover),
+                ),
               child: Stack(
                 children: [
-                  Container(
-                    alignment: Alignment(missibleX, missibleY),
-                    child: Container(
-                        width: 30,
-                        height: 30,
-                        color: Colors.red
-                    ),
+                  MyBall(ballX: this.ballX, ballY: this.ballY),
+                  MyMissle(
+                    missileX: this.missileX,
+                    height: this.missileHeight
                   ),
-                  MyPlayer(playerX: this.playerX)
+                  MyPlayer(playerX: playerX),
+                  Positioned(
+                      top: 50.0,
+                      left: 0.0,
+                      right: 0.0,
+                      child: ShowPoint(
+                        text: "Điểm của bạn: " + point.toString(),
+                      )
+                  )
                 ],
-              ),
+              )
             ),
           ),
           Expanded(
             child: Container(
-                color: Colors.grey.shade500,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/bubble/Background.png"),
+                    fit: BoxFit.cover),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  MyButton(icon: Icons.play_arrow, func: startGame),
                   MyButton(icon: Icons.arrow_back, func: moveL),
                   MyButton(icon: Icons.arrow_upward, func: fireMissile),
                   MyButton(icon: Icons.arrow_forward, func: moveR)
