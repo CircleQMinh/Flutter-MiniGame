@@ -7,6 +7,7 @@ import 'package:minigame_app/screen/BubbleTrouble/Ball.dart';
 import 'package:minigame_app/screen/BubbleTrouble/Missile.dart';
 import 'package:minigame_app/screen/BubbleTrouble/ShowPoint.dart';
 import 'package:minigame_app/screen/BubbleTrouble/player.dart';
+import 'package:minigame_app/screen/shared/submit.dart';
 
 import 'button.dart';
 
@@ -48,7 +49,7 @@ class _BubbleTroublePage extends State<BubbleTroublePage> {
       var isLeft = rnd.nextBool();
       double r = (isLeft ? -1 : 1) * rnd.nextInt(100).toDouble()*0.01;
       setState(() {
-        if(rnd.nextInt(2) % 2 == 0) {
+        if(ballDirection == direction.LEFT) {
           ballDirection = direction.RIGHT;
         }
         else {
@@ -111,7 +112,7 @@ class _BubbleTroublePage extends State<BubbleTroublePage> {
           ballX = 0.5;
           isStartGame = false;
         });
-        showInfoDialog();
+        endGame();
       }
     });
   }
@@ -221,6 +222,47 @@ class _BubbleTroublePage extends State<BubbleTroublePage> {
       missileHeight = 10;
       missShot = false;
     });
+  }
+
+  endGame() async {
+    await showDialog(
+      barrierDismissible: false, // user must tap button!
+      context: context,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                    "Thành tích của bạn đã được lưu lại. Bạn có muốn chia sẻ thành tích lên bảng xếp hạng?"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Có'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubmitScoreScreen(4, point),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('Không'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          title: const Text("Game Over!"),
+        ),
+      ),
+    );
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:minigame_app/screen/shared/submit.dart';
 
 enum Direction { up, down, left, right }
 void main() {
@@ -49,10 +49,51 @@ class _HomePageState extends State<HomePage> {
     timerStart = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       updateSnake();
       if (gameOver()) {
-        gameOverAlert();
+        endGame();
         timer.cancel();
       }
     });
+  }
+
+  endGame() async {
+    await showDialog(
+      barrierDismissible: false, // user must tap button!
+      context: context,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: AlertDialog(
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                    "Thành tích của bạn đã được lưu lại. Bạn có muốn chia sẻ thành tích lên bảng xếp hạng?"),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Có'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubmitScoreScreen(2, snakePosition.length - 3),
+                  ),
+                );
+              },
+            ),
+            TextButton(
+              child: const Text('Không'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          title: const Text("Game Over!"),
+        ),
+      ),
+    );
   }
 
   continueGame() {
