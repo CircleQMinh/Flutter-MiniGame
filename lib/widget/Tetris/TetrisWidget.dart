@@ -38,6 +38,7 @@ class TetrisWidgetState extends State<TetrisWidget>
   //điểm
   int score = 0;
   String gameStartBtn = "Start";
+  bool pause = false;
   @override
   void initState() {
     super.initState();
@@ -270,33 +271,13 @@ class TetrisWidgetState extends State<TetrisWidget>
   }
 
   pauseGame() async {
-    animationController.stop();
-    await showDialog(
-      barrierDismissible: false, // user must tap button!
-      context: context,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: AlertDialog(
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text("Trò chơi đang tạm dừng"),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Tiếp tục'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                animationController.forward();
-              },
-            ),
-          ],
-          title: const Text("Tạm dừng"),
-        ),
-      ),
-    );
+    if (pause) {
+      pause = false;
+      animationController.forward();
+    } else {
+      pause = true;
+      animationController.stop();
+    }
   }
 
   resetGame() async {
@@ -350,6 +331,25 @@ class TetrisWidgetState extends State<TetrisWidget>
         ),
       ),
     );
+  }
+
+  void changeSpeed(String spd) {
+    switch (spd) {
+      case "0":
+        animationController.duration = Duration(milliseconds: 1200);
+        break;
+      case "1":
+        animationController.duration = Duration(milliseconds: 800);
+        break;
+      case "2":
+        animationController.duration = Duration(milliseconds: 200);
+        break;
+      case "3":
+        animationController.duration = Duration(milliseconds: 50);
+        break;
+      default:
+        animationController.duration = Duration(milliseconds: 800);
+    }
   }
 
   bool checkTargetMove(Offset targetPos, BrickObject object) {

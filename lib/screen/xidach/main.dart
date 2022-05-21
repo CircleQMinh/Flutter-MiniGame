@@ -427,7 +427,7 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
               fontWeight: FontWeight.bold,
               decoration: TextDecoration.none,
               fontSize: 18,
-              color: Colors.yellow,
+              color: Colors.red,
             )),
       );
     }
@@ -544,7 +544,6 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text("Nhập số xu bạn muốn cược"),
                 TextField(
                   controller: _textFieldController,
                   keyboardType: TextInputType.number,
@@ -709,9 +708,9 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color: dealersScore > 21
-                                                ? Colors.red
-                                                : Colors.yellow),
+                                            color: gameTurn == "Player"
+                                                ? Colors.yellow
+                                                : Colors.red),
                                       ),
                                     ),
                                     CardsGridView(cards: dealersCards),
@@ -741,9 +740,9 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color: playersScore > 21
-                                                ? Colors.red
-                                                : Colors.yellow,
+                                            color: gameTurn == "Player"
+                                                ? Colors.yellow
+                                                : Colors.red,
                                           )),
                                     ),
                                   ],
@@ -759,16 +758,37 @@ class _BlackJackScreenState extends State<BlackJackScreen> {
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: Text('Số xu của bạn : $coins',
-                                              textAlign: TextAlign.center),
+                                          child: Text(
+                                            'Số xu của bạn : $coins',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                         Expanded(
-                                          child: Text('Ván đấu: $round/10',
-                                              textAlign: TextAlign.center),
+                                          child: Text(
+                                            'Ván đấu: $round/10',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                         Expanded(
-                                          child: Text('Số xu đã cược: $bet',
-                                              textAlign: TextAlign.center),
+                                          child: Text(
+                                            'Số xu đã cược: $bet',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),

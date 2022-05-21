@@ -21,6 +21,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
       ValueNotifier<List<BrickObject>>(List<BrickObject>.from([]));
 
   int score = 0;
+  int speed = 1;
   late Timer _clockTimer;
   @override
   void initState() {
@@ -43,6 +44,15 @@ class _TetrisScreenState extends State<TetrisScreen> {
   void startGame() {
     _isGameStarted = true;
 
+    setState(() {});
+  }
+
+  getNewSpeed(int s) {
+    s++;
+    if (s == 4) {
+      s = 0;
+    }
+    speed = s;
     setState(() {});
   }
 
@@ -128,6 +138,36 @@ class _TetrisScreenState extends State<TetrisScreen> {
         false;
   }
 
+  String getSpeedText(int s) {
+    switch (s) {
+      case 1:
+        return "X1";
+      case 0:
+        return "X0.5";
+
+      case 2:
+        return "X2";
+
+      case 3:
+        return "X3";
+
+      default:
+        return "X1";
+    }
+  }
+
+  String getPauseString() {
+    var bool = keyGlobal.currentState?.pause;
+    if (bool == null) {
+      return "Pause";
+    } else {
+      if (bool) {
+        return "Continue";
+      }
+      return "Pause";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double sizePerSquare = 30;
@@ -158,7 +198,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        "Scores :$score ",
+                                        "Scores : $score ",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           decoration: TextDecoration.none,
@@ -195,7 +235,7 @@ class _TetrisScreenState extends State<TetrisScreen> {
                                               keyGlobal.currentState!
                                                   .pauseGame();
                                             },
-                                            child: const Text("Pause")),
+                                            child: Text(getPauseString())),
                                       ],
                                     )
                                   ],
@@ -274,104 +314,134 @@ class _TetrisScreenState extends State<TetrisScreen> {
                             ),
                           ),
                           //controller
-                          Container(
-                            color: Colors.red,
-                            height: constraints.biggest.height / 6,
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                color: Colors.red,
+                                height: constraints.biggest.height / 6,
+                                child: Column(
                                   children: [
-                                    Material(
-                                      color: Colors.red,
-                                      child: Center(
-                                        child: Ink(
-                                          decoration: const ShapeDecoration(
-                                            color: Colors.lightBlue,
-                                            shape: CircleBorder(),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () async => keyGlobal
-                                                .currentState!
-                                                .transformBrick(
-                                                    Offset(-sizePerSquare, 0),
-                                                    null),
-                                            icon: const Icon(Icons.arrow_left),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8.0, right: 8),
-                                      child: Material(
-                                        color: Colors.red,
-                                        child: Center(
-                                          child: Ink(
-                                            decoration: const ShapeDecoration(
-                                              color: Colors.lightBlue,
-                                              shape: CircleBorder(),
-                                            ),
-                                            child: IconButton(
-                                              onPressed: () async => keyGlobal
-                                                  .currentState!
-                                                  .transformBrick(null, true),
-                                              icon: const Icon(Icons
-                                                  .rotate_90_degrees_ccw_outlined),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Material(
+                                          color: Colors.red,
+                                          child: Center(
+                                            child: Ink(
+                                              decoration: const ShapeDecoration(
+                                                color: Colors.lightBlue,
+                                                shape: CircleBorder(),
+                                              ),
+                                              child: IconButton(
+                                                onPressed: () async => keyGlobal
+                                                    .currentState!
+                                                    .transformBrick(
+                                                        Offset(
+                                                            -sizePerSquare, 0),
+                                                        null),
+                                                icon: const Icon(
+                                                    Icons.arrow_left),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    Material(
-                                      color: Colors.red,
-                                      child: Center(
-                                        child: Ink(
-                                          decoration: const ShapeDecoration(
-                                            color: Colors.lightBlue,
-                                            shape: CircleBorder(),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () async => keyGlobal
-                                                .currentState!
-                                                .transformBrick(
-                                                    Offset(sizePerSquare, 0),
-                                                    null),
-                                            icon: const Icon(Icons.arrow_right),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 4.0, right: 4),
+                                          child: Material(
+                                            color: Colors.red,
+                                            child: Center(
+                                              child: Ink(
+                                                decoration:
+                                                    const ShapeDecoration(
+                                                  color: Colors.lightBlue,
+                                                  shape: CircleBorder(),
+                                                ),
+                                                child: IconButton(
+                                                  onPressed: () async =>
+                                                      keyGlobal.currentState!
+                                                          .transformBrick(
+                                                              null, true),
+                                                  icon: const Icon(Icons
+                                                      .rotate_90_degrees_ccw_outlined),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Material(
+                                          color: Colors.red,
+                                          child: Center(
+                                            child: Ink(
+                                              decoration: const ShapeDecoration(
+                                                color: Colors.lightBlue,
+                                                shape: CircleBorder(),
+                                              ),
+                                              child: IconButton(
+                                                onPressed: () async => keyGlobal
+                                                    .currentState!
+                                                    .transformBrick(
+                                                        Offset(
+                                                            sizePerSquare, 0),
+                                                        null),
+                                                icon: const Icon(
+                                                    Icons.arrow_right),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Material(
+                                          color: Colors.red,
+                                          child: Center(
+                                            child: Ink(
+                                              decoration: const ShapeDecoration(
+                                                color: Colors.lightBlue,
+                                                shape: CircleBorder(),
+                                              ),
+                                              child: IconButton(
+                                                onPressed: () async => keyGlobal
+                                                    .currentState!
+                                                    .transformBrick(
+                                                        Offset(
+                                                            0, sizePerSquare),
+                                                        null),
+                                                icon: const Icon(
+                                                    Icons.arrow_drop_down),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Material(
-                                      color: Colors.red,
-                                      child: Center(
-                                        child: Ink(
-                                          decoration: const ShapeDecoration(
-                                            color: Colors.lightBlue,
-                                            shape: CircleBorder(),
-                                          ),
-                                          child: IconButton(
-                                            onPressed: () async => keyGlobal
-                                                .currentState!
-                                                .transformBrick(
-                                                    Offset(0, sizePerSquare),
-                                                    null),
-                                            icon: const Icon(
-                                                Icons.arrow_drop_down),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                              ),
+                              Column(
+                                children: [
+                                  Text("Speed : "),
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateColor.resolveWith(
+                                                  (states) =>
+                                                      Colors.red[900]!)),
+                                      onPressed: () => {
+                                            getNewSpeed(speed),
+                                            keyGlobal.currentState!
+                                                .changeSpeed(speed.toString())
+                                          },
+                                      child: Text(getSpeedText(speed))),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       );
