@@ -66,7 +66,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                           () => {
                                 Fluttertoast.showToast(
                                     msg:
-                                        "Phiên bản ngày 13:55 13/05!", // message
+                                        "Phiên bản ngày 13:55 21/05!", // message
                                     toastLength: Toast.LENGTH_SHORT, // length
                                     gravity: ToastGravity.SNACKBAR, // location
                                     timeInSecForIosWeb: 1 // duration
@@ -119,14 +119,14 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
                               modeButton(
                                   "Con rắn",
                                   "Trò chơi con rắn!",
-                                  FontAwesomeIcons.chartLine,
+                                  FontAwesomeIcons.python,
                                   Colors.green,
                                   width,
                                   "/snake"),
                               modeButton(
                                   "Bắn bong bóng",
                                   "Trò chơi bắn bong bóng!",
-                                  FontAwesomeIcons.btc,
+                                  FontAwesomeIcons.bowlingBall,
                                   Colors.pink,
                                   width,
                                   "/bubble"),
